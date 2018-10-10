@@ -9,6 +9,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.Route;
 
@@ -23,6 +24,8 @@ public class DemoView extends HorizontalLayout {
     	
     	ChipField<Planet> chf = new ChipField<>("Choose planets", planet->planet.getName());
     	chf.setDataProvider(ldp);
+    	chf.setClosable(true);
+    	chf.setNewItemHandler(label->new Planet(label));
 
     	Button b = new Button("Obtain selected planets");
     	b.addClickListener(event->Notification.show("Planets: " + chf.getValue().stream().map(planet->planet.getName()).collect(Collectors.joining(","))));
@@ -54,11 +57,25 @@ public class DemoView extends HorizontalLayout {
     	vl = new VerticalLayout(chf4);
         add(vl);
 
+        Planet p = new Planet("A new planet");
+        ChipField<String> chf5 = new ChipField<>("Choose planet features", "Atmosphere");
+        chf5.setItems(Arrays.asList("Rings", "Moons", "Water", "Rocks"));
+        Binder<Planet> binder = new Binder<>();
+        binder.bind(chf5,Planet::getConfiguration,Planet::setConfiguration);
+        binder.setBean(p);
+        Button show = new Button("Show planet configuration");
+        show.addClickListener(event->Notification.show("Planet: " + p.getName() + ", features: " + p.getConfiguration().stream().collect(Collectors.joining(","))));
+        chf5.addValueChangeListener(newItem->Notification.show("Items: " + newItem.getValue()));
+        
+    	vl = new VerticalLayout(chf5,show);
+        add(vl);
+
     }
     
     
     public static class Planet {
     	private String name;
+    	private List<String> configuration = new ArrayList<>();
     	
     	public Planet(String name) {
     		this.name = name;
@@ -70,6 +87,14 @@ public class DemoView extends HorizontalLayout {
 
 		public void setName(String name) {
 			this.name = name;
+		}
+
+		public List<String> getConfiguration() {
+			return configuration;
+		}
+
+		public void setConfiguration(List<String> configuration) {
+			this.configuration = configuration;
 		}
     	
     }

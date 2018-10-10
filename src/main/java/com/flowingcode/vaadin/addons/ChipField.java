@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,6 +16,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DomEvent;
 import com.vaadin.flow.component.EventData;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -37,10 +38,9 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
 
 	private DataProvider<T, ?> availableItems = DataProvider.ofCollection(new ArrayList<T>());
-	private List<T> selectedItems = new ArrayList<>();
+//	private List<T> selectedItems = new ArrayList<>();
 	private ItemLabelGenerator<T> itemLabelGenerator;
-	private boolean allowNewItems;
-	private NewItemHandler<T> newItemHandler;
+	private Function<String,T> newItemHandler;
 
 	@SafeVarargs
 	public ChipField(String label, ItemLabelGenerator<T> itemLabelGenerator, T... availableItems) {
@@ -56,37 +56,41 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
 	}
 
 	private void configure() {
-		configureDefaultProperties();
+		configureItems();
 		getElement().addEventListener("chip-created", e->{
 			JsonObject eventData = e.getEventData();
-			String chipLabel = eventData.getString("event.detail.chipLabel");
+			String chipLabel = eventData.get("event.detail.chipLabel").asString();
 			Stream<T> streamItems = availableItems.fetch(new Query());
 			Optional<T> newItem = streamItems.filter(item->itemLabelGenerator.apply(item).equals(chipLabel)).findFirst();
 			if (newItem.isPresent()) {
-				this.selectedItems.add(newItem.get());
+				ArrayList<T> newValue = new ArrayList<>(getValue());
+				newValue.add(newItem.get());
+				this.setValue(newValue);
 			} else {
-				if (!allowNewItems) throw new
-				
-				// VER ESTE TEMA, LO QUE HABRIA QUE HACER ES PONER UN HANDLER ESPECIAL QUE EL POR DEFECTO ASUMA QUE ES UN LIST DATA PROVIDER
-				// Y LO AGREGUE
-//				this.items.add(new Chip(chipLabel));				
+				if (isAllowAdditionalItems()) {
+					if (newItemHandler==null) throw new IllegalStateException("You need to setup a NewItemHandler");
+					T item = this.newItemHandler.apply(chipLabel);
+					ArrayList<T> newValue = new ArrayList<>(getValue());
+					newValue.add(item);
+					this.setValue(newValue);
+				} else throw new IllegalStateException("Adding new items is not allowed, but still receiving new items from client-side. Probably wrong configuration.");
 			}
 		}).addEventData("event.detail.chipLabel");
 		getElement().addEventListener("chip-removed", e->{
 			JsonObject eventData = e.getEventData();
-			String chipLabel = eventData.getString("event.detail.chipLabel");
+			String chipLabel = eventData.get("event.detail.chipLabel").asString();
 			Stream<T> streamItems = availableItems.fetch(new Query());
 			Optional<T> itemToRemove = streamItems.filter(item->itemLabelGenerator.apply(item).equals(chipLabel)).findFirst();
 			if (itemToRemove.isPresent()) {
-				System.out.println(this.selectedItems.remove(itemToRemove.get())); 
+				System.out.println(this.getValue().remove(itemToRemove.get())); 
 			}
+			ArrayList<T> newValue = new ArrayList<>(getValue());
+			this.setValue(newValue);
 		}).addEventData("event.detail.chipLabel");
 	}
 	
-	private void configureDefaultProperties() {
-		setAllowAdditionalItems(true);
+	private void configureItems() {
 		Stream<T> streamItems = availableItems.fetch(new Query());
-		
 		JreJsonArray array = (JreJsonArray) new JreJsonFactory().createArray();
 		AtomicInteger ai = new AtomicInteger(0);
 		streamItems.forEach(item->{
@@ -103,17 +107,14 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
 		configure();
 	}
 	
-	private List<Chip> generateSelectedChips() {
-		return selectedItems.stream().map(item->generateChip(item)).collect(Collectors.toList());
+	private List<Chip> generateSelectedChips(List<T> itemsToGenerate) {
+		return itemsToGenerate.stream().map(item->generateChip(item)).collect(Collectors.toList());
 	}
 
 	private Chip generateChip(T item) {
 		return new Chip(itemLabelGenerator.apply(item));
 	}
 
-	private void showSelectedChips() {
-		this.generateSelectedChips().forEach(chip -> appendClientChipWithoutEvent(chip));
-	}
 	
 	private void appendClientChipWithoutEvent(Chip chip) {
 		String function = "			(function _appendChipWithoutEvent() {" +
@@ -144,20 +145,18 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
 		UI.getCurrent().getPage().executeJavaScript(function, this.getElement(), chip.getLabel());
 	}
 
-	private void removeClientChip(Chip chip) {
+	private void removeClientChipWithoutEvent(Chip chip) {
 		String function = "			(function _removeChipByLabel() {" + 
 				"				const index = $0.items.indexOf($1);" + 
-				"					alert('paso por aca ' + $1);" + 
 				"				if (index != -1) {" + 
-				"					$0._throwChipRemovedEvent(this.items[index]);" + 
-				"					$0.splice('availableItems', index, 1);" + 
+				"					$0.items.splice('availableItems', index, 1);" + 
 				"				}" + 
 				"			})()";
 		UI.getCurrent().getPage().executeJavaScript(function, this.getElement(), chip.getLabel());
 	}
 
-	private void removeAllClientChips() {
-		this.generateSelectedChips().forEach(chip -> removeClientChip(chip));
+	private void removeAllClientChipsWithoutEvent() {
+		this.generateSelectedChips(getValue()).forEach(chip -> removeClientChipWithoutEvent(chip));
 	}
 
 	public void setAvailableItems(List<T> items) {
@@ -173,8 +172,8 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
 	}
 
 	public String[] getChipsAsStrings() {
-		return this.generateSelectedChips().stream().map(Chip::getLabel).collect(Collectors.toList())
-				.toArray(new String[this.generateSelectedChips().size()]);
+		return this.generateSelectedChips(getValue()).stream().map(Chip::getLabel).collect(Collectors.toList())
+				.toArray(new String[this.generateSelectedChips(getValue()).size()]);
 	}
 	
 	public void setClosable(boolean closable) {
@@ -234,7 +233,7 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
 	}
 	
 	public void setAllowAdditionalItems(boolean allowAdditionalItems) {
-		getElement().setProperty("additionalItems", allowAdditionalItems);
+		this.getElement().setProperty("additionalItems", allowAdditionalItems);
 	}
 	
 	public boolean isAllowAdditionalItems() {
@@ -291,20 +290,23 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
         this.itemLabelGenerator = itemLabelGenerator;
     }
     
-    public void setNewItemHandler(NewItemHandler<T> handler) {
+    public void setNewItemHandler(Function<String,T> handler) {
     	this.newItemHandler = handler;
+    	this.setAllowAdditionalItems(true);
     }
 
 	@Override
 	protected void setPresentationValue(List<T> newPresentationValue) {
-		this.setSelectedItems(newPresentationValue);
+//		this.setSelectedItems(newPresentationValue);
+//		this.removeAllClientChipsWithoutEvent();
+//		this.generateSelectedChips(newPresentationValue).forEach(chip -> appendClientChipWithoutEvent(chip));
 	}
 
-	private void setSelectedItems(List<T> newPresentationValue) {
-		this.selectedItems.clear();
-		newPresentationValue.forEach(item->this.selectedItems.add(item));
-		showSelectedChips();
-	}
+//	private void setSelectedItems(List<T> newPresentationValue) {
+//		this.selectedItems.clear();
+//		newPresentationValue.forEach(item->this.selectedItems.add(item));
+//		showSelectedChips();
+//	}
 
 	@Override
 	public void setDataProvider(DataProvider<T, ?> dataProvider) {
@@ -315,19 +317,11 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
 		if (!availableItems.fetch(new Query()).anyMatch(item->item.equals(newItem))) {
 			throw new UnsupportedOperationException("Cannot select item '" + newItem + "', because is not present in DataProvider");
 		} else {
-			this.selectedItems.add(newItem);
+			this.getValue().add(newItem);
 			this.appendClientChipWithoutEvent(generateChip(newItem));
 			this.fireEvent(new ChipCreatedEvent<>(this, false, itemLabelGenerator.apply(newItem)));
 		}
 	}
 	
-	@Override
-	public List<T> getValue() {
-		return selectedItems;
-	}
-	
-	public interface NewItemHandler<T> {
-		public T generateNewItem(String label);
-	}
 	
 }
