@@ -45,13 +45,16 @@ public class DemoView extends HorizontalLayout {
         add(vl);
 
         ChipField<String> chf3 = new ChipField<>("Restricted input (closable)", "Enter only letters");
+        chf3.setAvailableItems(Arrays.asList("Mercury", "Venus", "Earth"));
         chf3.setAllowedPattern("[a-zA-Z]");
         chf3.setClosable(true);
 
     	vl = new VerticalLayout(chf3);
         add(vl);
 
-        ChipField<String> chf4 = new ChipField<>("Disabled", "A given disabled chip");
+        ChipField<String> chf4 = new ChipField<>("Disabled", "Mercury", "Venus", "Earth");
+        chf4.addSelectedItem("Mercury");
+        chf4.addSelectedItem("Venus");
         chf4.setDisabled(true);
 
     	vl = new VerticalLayout(chf4);
@@ -96,7 +99,7 @@ public class DemoView extends HorizontalLayout {
 		public void setConfiguration(List<String> configuration) {
 			this.configuration = configuration;
 		}
-    	
+
     }
     
 }

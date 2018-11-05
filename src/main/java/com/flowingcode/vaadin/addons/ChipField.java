@@ -2,7 +2,9 @@ package com.flowingcode.vaadin.addons;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -16,7 +18,6 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DomEvent;
 import com.vaadin.flow.component.EventData;
 import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -38,7 +39,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
 
 	private DataProvider<T, ?> availableItems = DataProvider.ofCollection(new ArrayList<T>());
-//	private List<T> selectedItems = new ArrayList<>();
+	private Map<String,T> selectedItems = new HashMap<>();
 	private ItemLabelGenerator<T> itemLabelGenerator;
 	private Function<String,T> newItemHandler;
 
@@ -63,29 +64,24 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
 			Stream<T> streamItems = availableItems.fetch(new Query());
 			Optional<T> newItem = streamItems.filter(item->itemLabelGenerator.apply(item).equals(chipLabel)).findFirst();
 			if (newItem.isPresent()) {
-				ArrayList<T> newValue = new ArrayList<>(getValue());
-				newValue.add(newItem.get());
-				this.setValue(newValue);
+				selectedItems.put(chipLabel, newItem.get());
+				this.setValue(new ArrayList<T>(selectedItems.values()));
 			} else {
 				if (isAllowAdditionalItems()) {
 					if (newItemHandler==null) throw new IllegalStateException("You need to setup a NewItemHandler");
 					T item = this.newItemHandler.apply(chipLabel);
-					ArrayList<T> newValue = new ArrayList<>(getValue());
-					newValue.add(item);
-					this.setValue(newValue);
-				} else throw new IllegalStateException("Adding new items is not allowed, but still receiving new items from client-side. Probably wrong configuration.");
+					selectedItems.put(chipLabel, item);
+					this.setValue(new ArrayList<T>(selectedItems.values()));
+				} else throw new IllegalStateException("Adding new items is not allowed, but still receiving new items (not present in DataProvider) from client-side. Probably wrong configuration.");
 			}
 		}).addEventData("event.detail.chipLabel");
 		getElement().addEventListener("chip-removed", e->{
 			JsonObject eventData = e.getEventData();
 			String chipLabel = eventData.get("event.detail.chipLabel").asString();
-			Stream<T> streamItems = availableItems.fetch(new Query());
-			Optional<T> itemToRemove = streamItems.filter(item->itemLabelGenerator.apply(item).equals(chipLabel)).findFirst();
-			if (itemToRemove.isPresent()) {
-				System.out.println(this.getValue().remove(itemToRemove.get())); 
-			}
-			ArrayList<T> newValue = new ArrayList<>(getValue());
-			this.setValue(newValue);
+			T itemToRemove = selectedItems.get(chipLabel);
+			selectedItems.remove(chipLabel);
+			List<T> oldValue = new ArrayList<>(getValue());
+			getValue().remove(itemToRemove);
 		}).addEventData("event.detail.chipLabel");
 	}
 	
@@ -130,21 +126,6 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
 		UI.getCurrent().getPage().executeJavaScript(function, this.getElement(), chip.getLabel());
 	}
 
-	private void appendClientChip(Chip chip) {
-		String function = "			(function _appendChip() {" + 
-				"				$0._saveTag($1);" + 
-				"				$0.dispatchEvent(new CustomEvent('chip-created', {" + 
-				"					detail: {" + 
-				"						chipLabel: $1" + 
-				"					}" + 
-				"				}));" + 
-				"				$0.required = false;" + 
-				"				$0.autoValidate = false;" + 
-				"				$0._value = '';" + 
-				"			})()";
-		UI.getCurrent().getPage().executeJavaScript(function, this.getElement(), chip.getLabel());
-	}
-
 	private void removeClientChipWithoutEvent(Chip chip) {
 		String function = "			(function _removeChipByLabel() {" + 
 				"				const index = $0.items.indexOf($1);" + 
@@ -153,10 +134,6 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
 				"				}" + 
 				"			})()";
 		UI.getCurrent().getPage().executeJavaScript(function, this.getElement(), chip.getLabel());
-	}
-
-	private void removeAllClientChipsWithoutEvent() {
-		this.generateSelectedChips(getValue()).forEach(chip -> removeClientChipWithoutEvent(chip));
 	}
 
 	public void setAvailableItems(List<T> items) {
@@ -297,16 +274,7 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
 
 	@Override
 	protected void setPresentationValue(List<T> newPresentationValue) {
-//		this.setSelectedItems(newPresentationValue);
-//		this.removeAllClientChipsWithoutEvent();
-//		this.generateSelectedChips(newPresentationValue).forEach(chip -> appendClientChipWithoutEvent(chip));
 	}
-
-//	private void setSelectedItems(List<T> newPresentationValue) {
-//		this.selectedItems.clear();
-//		newPresentationValue.forEach(item->this.selectedItems.add(item));
-//		showSelectedChips();
-//	}
 
 	@Override
 	public void setDataProvider(DataProvider<T, ?> dataProvider) {
@@ -314,13 +282,21 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
 	}
 
 	public void addSelectedItem(T newItem) {
-		if (!availableItems.fetch(new Query()).anyMatch(item->item.equals(newItem))) {
-			throw new UnsupportedOperationException("Cannot select item '" + newItem + "', because is not present in DataProvider");
+		if (!availableItems.fetch(new Query()).anyMatch(item->item.equals(newItem)) && !isAllowAdditionalItems()) {
+			throw new UnsupportedOperationException("Cannot select item '" + newItem + "', because is not present in DataProvider, and adding new items is not permitted.");
 		} else {
 			this.getValue().add(newItem);
+			this.selectedItems.put(itemLabelGenerator.apply(newItem), newItem);
 			this.appendClientChipWithoutEvent(generateChip(newItem));
 			this.fireEvent(new ChipCreatedEvent<>(this, false, itemLabelGenerator.apply(newItem)));
 		}
+	}
+	
+	public void removeSelectedItem(T itemToRemove) {
+		this.getValue().remove(itemToRemove);
+		this.selectedItems.remove(itemLabelGenerator.apply(itemToRemove), itemToRemove);
+		this.removeClientChipWithoutEvent(generateChip(itemToRemove));
+		this.fireEvent(new ChipRemovedEvent<>(this, false, itemLabelGenerator.apply(itemToRemove)));
 	}
 	
 	
