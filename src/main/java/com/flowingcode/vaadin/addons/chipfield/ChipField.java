@@ -1,4 +1,4 @@
-package com.flowingcode.vaadin.addons;
+package com.flowingcode.vaadin.addons.chipfield;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -110,7 +110,6 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
 	private Chip generateChip(T item) {
 		return new Chip(itemLabelGenerator.apply(item));
 	}
-
 	
 	private void appendClientChipWithoutEvent(Chip chip) {
 		String function = "			(function _appendChipWithoutEvent() {" +

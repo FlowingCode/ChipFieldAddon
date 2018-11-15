@@ -1,10 +1,11 @@
-package com.flowingcode.vaadin.addons;
+package com.flowingcode.vaadin.addons.chipfield;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.flowingcode.vaadin.addons.chipfield.ChipField;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;

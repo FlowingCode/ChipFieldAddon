@@ -1,4 +1,4 @@
-package com.flowingcode.vaadin.addons;
+package com.flowingcode.vaadin.addons.chipfield;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
