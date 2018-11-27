@@ -37,6 +37,7 @@ import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DomEvent;
 import com.vaadin.flow.component.EventData;
+import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.Tag;
@@ -56,7 +57,7 @@ import elemental.json.impl.JreJsonFactory;
 @Tag("paper-chip-input-autocomplete")
 @HtmlImport("bower_components/paper-chip/paper-chip-input-autocomplete.html")
 public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
-implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T> {
+implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 
 	private DataProvider<T, ?> availableItems = DataProvider.ofCollection(new ArrayList<T>());
 	private Map<String,T> selectedItems = new HashMap<>();
