@@ -79,29 +79,21 @@ Here is a simple example on how to try out the add-on component:
     	chf.setClosable(true);
     	chf.setNewItemHandler(label->new Planet(label));
 
-For a more comprehensive example, see com.flowingcode.vaadin.addons.chipfield.DemoView
+For a more comprehensive example, see `com.flowingcode.vaadin.addons.chipfield.DemoView`
 
 ## Features
 
-### Fluent API
+### Easy API
 
-    	c = new Carousel(s1,s2,s3,s4)
-    			.withAutoProgress()
-    			.withSlideDuration(4)
-    			.withStartPosition(1);
+    	ChipField<String> chf = new ChipField<>("Select some planets", "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune");
+		Button b = new Button("Obtain selected planets");
+    	b.addClickListener(event->Notification.show("Planets: " + chf.getValue().stream().collect(Collectors.joining(",")));
 
-### Server-side listeners
+### Binder support
 
-    	c.addChangeListener(e->Notification.show("changed!",1000,Position.BOTTOM_END));
-
-### Server-side methods
-
-    	Button next = new Button(">>");
-    	next.addClickListener(e->cf.moveNext());
-    	Button prev = new Button("<<");
-    	prev.addClickListener(e->cf.movePrev());
-    	Button last = new Button(">|");
-    	last.addClickListener(e->cf.movePos(3));
-    	Button first = new Button("|<");
-    	first.addClickListener(e->cf.movePos(0));
-
+        ChipField<String> chf5 = new ChipField<>("Choose planet features (Binder demo, try with: 'Rings', 'Moons', 'Water', etc.)");
+        chf5.setWidth("500px");
+        chf5.setItems(Arrays.asList("Rings", "Moons", "Water", "Rocks", "Lava", "Ice", "Cold", "Heat", "Atmosphere"));
+        Binder<Planet> binder = new Binder<>();
+        binder.bind(chf5,Planet::getConfiguration,Planet::setConfiguration);
+        binder.setBean(p);
