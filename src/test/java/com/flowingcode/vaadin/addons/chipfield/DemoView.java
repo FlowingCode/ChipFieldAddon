@@ -54,7 +54,7 @@ public class DemoView extends VerticalLayout {
 
     	Button b2 = new Button("Add random planet");
     	b2.addClickListener(event->{
-    		Planet p = new Planet("Planet " + Math.random());
+    		Planet p = new Planet("Planet" + Math.round(Math.random()*10000));
     		availablePlanets.add(p);
     		ldp.refreshAll();
     		chf.addSelectedItem(p);
