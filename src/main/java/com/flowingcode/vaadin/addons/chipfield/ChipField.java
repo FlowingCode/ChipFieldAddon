@@ -49,8 +49,8 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.shared.Registration;
 
+import elemental.json.JsonArray;
 import elemental.json.JsonObject;
-import elemental.json.impl.JreJsonArray;
 import elemental.json.impl.JreJsonFactory;
 
 @SuppressWarnings("serial")
@@ -82,7 +82,7 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 		getElement().addEventListener("chip-created", e->{
 			JsonObject eventData = e.getEventData();
 			String chipLabel = eventData.get("event.detail.chipLabel").asString();
-			Stream<T> streamItems = availableItems.fetch(new Query());
+			Stream<T> streamItems = availableItems.fetch(new Query<>());
 			Optional<T> newItem = streamItems.filter(item->itemLabelGenerator.apply(item).equals(chipLabel)).findFirst();
 			if (newItem.isPresent()) {
 				selectedItems.put(chipLabel, newItem.get());
@@ -99,22 +99,20 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 		getElement().addEventListener("chip-removed", e->{
 			JsonObject eventData = e.getEventData();
 			String chipLabel = eventData.get("event.detail.chipLabel").asString();
-			T itemToRemove = selectedItems.get(chipLabel);
-			selectedItems.remove(chipLabel);
-			List<T> oldValue = new ArrayList<>(getValue());
+			T itemToRemove = selectedItems.remove(chipLabel);
 			getValue().remove(itemToRemove);
 		}).addEventData("event.detail.chipLabel");
 	}
 	
 	private void configureItems() {
-		Stream<T> streamItems = availableItems.fetch(new Query());
-		JreJsonArray array = (JreJsonArray) new JreJsonFactory().createArray();
-		AtomicInteger ai = new AtomicInteger(0);
+		Stream<T> streamItems = availableItems.fetch(new Query<>());
+		JsonArray array = new JreJsonFactory().createArray();
+		AtomicInteger index = new AtomicInteger(0);
 		streamItems.forEach(item->{
 			JsonObject object = new JreJsonFactory().createObject();
 			object.put("text",itemLabelGenerator.apply(item));
 			object.put("value",itemLabelGenerator.apply(item));
-			array.set(ai.getAndIncrement(),object);
+			array.set(index.getAndIncrement(),object);
 		});
 		this.getElement().setPropertyJson("source", array);
 	}
@@ -169,8 +167,7 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 	}
 
 	public String[] getChipsAsStrings() {
-		return this.generateSelectedChips(getValue()).stream().map(Chip::getLabel).collect(Collectors.toList())
-				.toArray(new String[this.generateSelectedChips(getValue()).size()]);
+		return this.generateSelectedChips(super.getValue()).stream().map(Chip::getLabel).toArray(String[]::new);
 	}
 	
 	public void setClosable(boolean closable) {
@@ -245,7 +242,7 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 	@DomEvent("chip-removed")
 	static public class ChipRemovedEvent<T> extends ComponentEvent<ChipField<T>> {
 
-		private String chipLabel;
+		private final String chipLabel;
 		
 		public ChipRemovedEvent(ChipField<T> source, boolean fromClient, @EventData("event.detail.chipLabel") String chipLabel) {
 			super(source, fromClient);
@@ -260,7 +257,7 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 	@DomEvent("chip-created")
 	static public class ChipCreatedEvent<T> extends ComponentEvent<ChipField<T>> {
 		
-		private String chipLabel;
+		private final String chipLabel;
 		
 		public ChipCreatedEvent(ChipField<T> source, boolean fromClient, @EventData("event.detail.chipLabel") String chipLabel) {
 			super(source, fromClient);
@@ -302,7 +299,7 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 	}
 
 	public void addSelectedItem(T newItem) {
-		if (!availableItems.fetch(new Query()).anyMatch(item->item.equals(newItem)) && !isAllowAdditionalItems()) {
+		if (!availableItems.fetch(new Query<>()).anyMatch(item->item.equals(newItem)) && !isAllowAdditionalItems()) {
 			throw new UnsupportedOperationException("Cannot select item '" + newItem + "', because is not present in DataProvider, and adding new items is not permitted.");
 		} else {
 			this.getValue().add(newItem);
