@@ -1,3 +1,5 @@
+[![Build Status](https://jenkins.flowingcode.com/buildStatus/icon?job=ChipField-addon)](https://jenkins.flowingcode.com/job/ChipField-addon)
+
 # Chips Addon
 
 Vaadin Flow integration of https://github.com/ThomasCybulski/paper-chip
