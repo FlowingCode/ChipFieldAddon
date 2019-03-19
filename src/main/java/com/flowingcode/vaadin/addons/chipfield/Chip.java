@@ -1,5 +1,3 @@
-package com.flowingcode.vaadin.addons.chipfield;
-
 /*-
  * #%L
  * ChipField Addon
@@ -19,6 +17,7 @@ package com.flowingcode.vaadin.addons.chipfield;
  * limitations under the License.
  * #L%
  */
+package com.flowingcode.vaadin.addons.chipfield;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
