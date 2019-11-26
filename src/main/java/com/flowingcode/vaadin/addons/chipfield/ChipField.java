@@ -41,7 +41,8 @@ import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dependency.HtmlImport;
+import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.data.binder.HasDataProvider;
 import com.vaadin.flow.data.binder.HasItemsAndComponents;
 import com.vaadin.flow.data.provider.DataProvider;
@@ -54,14 +55,24 @@ import elemental.json.impl.JreJsonFactory;
 
 @SuppressWarnings("serial")
 @Tag("paper-chip-input-autocomplete")
-@HtmlImport("bower_components/paper-chip/paper-chip-input-autocomplete.html")
+@NpmPackage(value = "@polymer/iron-a11y-keys", version = "^3.0.1")
+@NpmPackage(value = "@polymer/iron-a11y-keys-behavior", version = "^3.0.1")
+@NpmPackage(value = "@polymer/iron-icons", version = "^3.0.1")
+@NpmPackage(value = "@polymer/paper-icon-button", version = "^3.0.2")
+@NpmPackage(value = "@polymer/paper-input", version = "^3.0.1")
+@NpmPackage(value = "@polymer/paper-item", version = "^3.0.1")
+@NpmPackage(value = "@polymer/paper-listbox", version = "^3.0.1")
+@NpmPackage(value = "@polymer/paper-material", version = "^3.0.1")
+@NpmPackage(value = "@polymer/paper-ripple", version = "^3.0.1")
+@NpmPackage(value = "@polymer/paper-styles", version = "^3.0.1")
+@JavaScript("./paper-chip-input-autocomplete.js")
 public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
-implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
+		implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 
 	private DataProvider<T, ?> availableItems = DataProvider.ofCollection(new ArrayList<T>());
-	private Map<String,T> selectedItems = new HashMap<>();
+	private Map<String, T> selectedItems = new HashMap<>();
 	private ItemLabelGenerator<T> itemLabelGenerator;
-	private Function<String,T> newItemHandler;
+	private Function<String, T> newItemHandler;
 
 	@SafeVarargs
 	public ChipField(String label, ItemLabelGenerator<T> itemLabelGenerator, T... availableItems) {
@@ -73,45 +84,49 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 
 	@SafeVarargs
 	public ChipField(String label, T... availableItems) {
-		this(label,item->item.toString(),availableItems);
+		this(label, item -> item.toString(), availableItems);
 	}
 
 	private void configure() {
 		configureItems();
-		getElement().addEventListener("chip-created", e->{
+		getElement().addEventListener("chip-created", e -> {
 			JsonObject eventData = e.getEventData();
 			String chipLabel = eventData.get("event.detail.chipLabel").asString();
 			Stream<T> streamItems = availableItems.fetch(new Query<>());
-			Optional<T> newItem = streamItems.filter(item->itemLabelGenerator.apply(item).equals(chipLabel)).findFirst();
+			Optional<T> newItem = streamItems.filter(item -> itemLabelGenerator.apply(item).equals(chipLabel))
+					.findFirst();
 			if (newItem.isPresent()) {
 				selectedItems.put(chipLabel, newItem.get());
 				this.setValue(new ArrayList<T>(selectedItems.values()));
 			} else {
 				if (isAllowAdditionalItems()) {
-					if (newItemHandler==null) throw new IllegalStateException("You need to setup a NewItemHandler");
+					if (newItemHandler == null)
+						throw new IllegalStateException("You need to setup a NewItemHandler");
 					T item = this.newItemHandler.apply(chipLabel);
 					selectedItems.put(chipLabel, item);
 					this.setValue(new ArrayList<T>(selectedItems.values()));
-				} else throw new IllegalStateException("Adding new items is not allowed, but still receiving new items (not present in DataProvider) from client-side. Probably wrong configuration.");
+				} else
+					throw new IllegalStateException(
+							"Adding new items is not allowed, but still receiving new items (not present in DataProvider) from client-side. Probably wrong configuration.");
 			}
 		}).addEventData("event.detail.chipLabel");
-		getElement().addEventListener("chip-removed", e->{
+		getElement().addEventListener("chip-removed", e -> {
 			JsonObject eventData = e.getEventData();
 			String chipLabel = eventData.get("event.detail.chipLabel").asString();
 			T itemToRemove = selectedItems.remove(chipLabel);
 			getValue().remove(itemToRemove);
 		}).addEventData("event.detail.chipLabel");
 	}
-	
+
 	private void configureItems() {
 		Stream<T> streamItems = availableItems.fetch(new Query<>());
 		JsonArray array = new JreJsonFactory().createArray();
 		AtomicInteger index = new AtomicInteger(0);
-		streamItems.forEach(item->{
+		streamItems.forEach(item -> {
 			JsonObject object = new JreJsonFactory().createObject();
-			object.put("text",itemLabelGenerator.apply(item));
-			object.put("value",itemLabelGenerator.apply(item));
-			array.set(index.getAndIncrement(),object);
+			object.put("text", itemLabelGenerator.apply(item));
+			object.put("value", itemLabelGenerator.apply(item));
+			array.set(index.getAndIncrement(), object);
 		});
 		this.getElement().setPropertyJson("source", array);
 	}
@@ -120,43 +135,35 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 	protected void onAttach(AttachEvent attachEvent) {
 		configure();
 	}
-	
+
 	private List<Chip> generateSelectedChips(List<T> itemsToGenerate) {
-		return itemsToGenerate.stream().map(item->generateChip(item)).collect(Collectors.toList());
+		return itemsToGenerate.stream().map(item -> generateChip(item)).collect(Collectors.toList());
 	}
 
 	private Chip generateChip(T item) {
 		return new Chip(itemLabelGenerator.apply(item));
 	}
-	
+
 	private void appendClientChipWithoutEvent(Chip chip) {
-		String function = "			(function _appendChipWithoutEvent() {" +
-				"				if ($0.allowDuplicates) {" + 
-				"					$0.push('items', $1);" + 
-				"				} else if ($0.items.indexOf($1) == -1) {" + 
-				"					$0.push('items', $1);" + 
-				"				}" + 
-				"				$0.required = false;" + 
-				"				$0.autoValidate = false;" + 
-				"				$0._value = '';" + 
-				"			})()";
-		UI.getCurrent().getPage().executeJavaScript(function, this.getElement(), chip.getLabel());
+		String function = "			(function _appendChipWithoutEvent() {" + "				if ($0.allowDuplicates) {"
+				+ "					$0.push('items', $1);" + "				} else if ($0.items.indexOf($1) == -1) {"
+				+ "					$0.push('items', $1);" + "				}" + "				$0.required = false;"
+				+ "				$0.autoValidate = false;" + "				$0._value = '';" + "			})()";
+		UI.getCurrent().getPage().executeJs(function, this.getElement(), chip.getLabel());
 	}
 
 	private void removeClientChipWithoutEvent(Chip chip) {
-		String function = "			(function _removeChipByLabel() {" + 
-				"				const index = $0.items.indexOf($1);" + 
-				"				if (index != -1) {" + 
-				"					$0.items.splice('availableItems', index, 1);" + 
-				"				}" + 
-				"			})()";
-		UI.getCurrent().getPage().executeJavaScript(function, this.getElement(), chip.getLabel());
+		String function = "			(function _removeChipByLabel() {"
+				+ "				const index = $0.items.indexOf($1);" + "				if (index != -1) {"
+				+ "					$0.items.splice('availableItems', index, 1);" + "				}"
+				+ "			})()";
+		UI.getCurrent().getPage().executeJs(function, this.getElement(), chip.getLabel());
 	}
 
 	public void setAvailableItems(List<T> items) {
 		this.availableItems = DataProvider.ofCollection(items);
 	}
-	
+
 	public String getLabel() {
 		return this.getElement().getProperty("label");
 	}
@@ -168,43 +175,43 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 	public String[] getChipsAsStrings() {
 		return this.generateSelectedChips(super.getValue()).stream().map(Chip::getLabel).toArray(String[]::new);
 	}
-	
+
 	public void setClosable(boolean closable) {
-	    getElement().setProperty("closable", closable);
+		getElement().setProperty("closable", closable);
 	}
-	
+
 	public boolean isClosable() {
-	    return getElement().getProperty("closable", false);
+		return getElement().getProperty("closable", false);
 	}
-	
+
 	public void setDisabled(boolean disabled) {
-	    getElement().setProperty("disabled", disabled);
+		getElement().setProperty("disabled", disabled);
 	}
-	
+
 	public boolean isDisabled() {
-	    return getElement().getProperty("disabled", false);
+		return getElement().getProperty("disabled", false);
 	}
-	
+
 	public void setReadonly(boolean readonly) {
-	    getElement().setProperty("readonly", readonly);
+		getElement().setProperty("readonly", readonly);
 	}
-	
+
 	public boolean isReadonly() {
-	    return getElement().getProperty("readonly", false);
+		return getElement().getProperty("readonly", false);
 	}
-	
+
 	public void setRequired(boolean required) {
-	    getElement().setProperty("required", required);
+		getElement().setProperty("required", required);
 	}
-	
+
 	public boolean isRequired() {
-	    return getElement().getProperty("required", false);
+		return getElement().getProperty("required", false);
 	}
-	
+
 	public void setValidationPattern(String pattern) {
 		getElement().setProperty("pattern", pattern);
 	}
-	
+
 	public String getValidationPattern() {
 		return getElement().getProperty("pattern");
 	}
@@ -212,7 +219,7 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 	public void setValidationErrorMessage(String errorMessage) {
 		getElement().setProperty("errorMessage", errorMessage);
 	}
-	
+
 	public String getValidationErrorMessage() {
 		return getElement().getProperty("errorMessage");
 	}
@@ -220,15 +227,15 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 	public void setAllowedPattern(String pattern) {
 		getElement().setProperty("allowedPattern", pattern);
 	}
-	
+
 	public String getAllowedPattern() {
 		return getElement().getProperty("allowedPattern");
 	}
-	
+
 	public void setAllowAdditionalItems(boolean allowAdditionalItems) {
 		this.getElement().setProperty("additionalItems", allowAdditionalItems);
 	}
-	
+
 	public boolean isAllowAdditionalItems() {
 		return getElement().getProperty("additionalItems", false);
 	}
@@ -236,14 +243,15 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 	public void validate() {
 		getElement().callFunction("validate");
 	}
-	
+
 	// EVENTS
 	@DomEvent("chip-removed")
 	static public class ChipRemovedEvent<T> extends ComponentEvent<ChipField<T>> {
 
 		private final String chipLabel;
-		
-		public ChipRemovedEvent(ChipField<T> source, boolean fromClient, @EventData("event.detail.chipLabel") String chipLabel) {
+
+		public ChipRemovedEvent(ChipField<T> source, boolean fromClient,
+				@EventData("event.detail.chipLabel") String chipLabel) {
 			super(source, fromClient);
 			this.chipLabel = chipLabel;
 		}
@@ -255,10 +263,11 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 
 	@DomEvent("chip-created")
 	static public class ChipCreatedEvent<T> extends ComponentEvent<ChipField<T>> {
-		
+
 		private final String chipLabel;
-		
-		public ChipCreatedEvent(ChipField<T> source, boolean fromClient, @EventData("event.detail.chipLabel") String chipLabel) {
+
+		public ChipCreatedEvent(ChipField<T> source, boolean fromClient,
+				@EventData("event.detail.chipLabel") String chipLabel) {
 			super(source, fromClient);
 			this.chipLabel = chipLabel;
 		}
@@ -270,23 +279,22 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Registration addChipRemovedListener(ComponentEventListener<ChipRemovedEvent<T>> listener) {
-		return addListener(ChipRemovedEvent.class, (ComponentEventListener)listener);
+		return addListener(ChipRemovedEvent.class, (ComponentEventListener) listener);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Registration addChipCreatedListener(ComponentEventListener<ChipCreatedEvent<T>> listener) {
-		return addListener(ChipCreatedEvent.class, (ComponentEventListener)listener);
+		return addListener(ChipCreatedEvent.class, (ComponentEventListener) listener);
 	}
 
-    public void setChipLabelGenerator(
-            ItemLabelGenerator<T> itemLabelGenerator) {
-        this.itemLabelGenerator = itemLabelGenerator;
-    }
-    
-    public void setNewItemHandler(Function<String,T> handler) {
-    	this.newItemHandler = handler;
-    	this.setAllowAdditionalItems(true);
-    }
+	public void setChipLabelGenerator(ItemLabelGenerator<T> itemLabelGenerator) {
+		this.itemLabelGenerator = itemLabelGenerator;
+	}
+
+	public void setNewItemHandler(Function<String, T> handler) {
+		this.newItemHandler = handler;
+		this.setAllowAdditionalItems(true);
+	}
 
 	@Override
 	protected void setPresentationValue(List<T> newPresentationValue) {
@@ -298,8 +306,9 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 	}
 
 	public void addSelectedItem(T newItem) {
-		if (!availableItems.fetch(new Query<>()).anyMatch(item->item.equals(newItem)) && !isAllowAdditionalItems()) {
-			throw new UnsupportedOperationException("Cannot select item '" + newItem + "', because is not present in DataProvider, and adding new items is not permitted.");
+		if (!availableItems.fetch(new Query<>()).anyMatch(item -> item.equals(newItem)) && !isAllowAdditionalItems()) {
+			throw new UnsupportedOperationException("Cannot select item '" + newItem
+					+ "', because is not present in DataProvider, and adding new items is not permitted.");
 		} else {
 			this.getValue().add(newItem);
 			this.selectedItems.put(itemLabelGenerator.apply(newItem), newItem);
@@ -307,13 +316,12 @@ implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 			this.fireEvent(new ChipCreatedEvent<>(this, false, itemLabelGenerator.apply(newItem)));
 		}
 	}
-	
+
 	public void removeSelectedItem(T itemToRemove) {
 		this.getValue().remove(itemToRemove);
 		this.selectedItems.remove(itemLabelGenerator.apply(itemToRemove), itemToRemove);
 		this.removeClientChipWithoutEvent(generateChip(itemToRemove));
 		this.fireEvent(new ChipRemovedEvent<>(this, false, itemLabelGenerator.apply(itemToRemove)));
 	}
-	
-	
+
 }

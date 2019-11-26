@@ -21,13 +21,24 @@ package com.flowingcode.vaadin.addons.chipfield;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.dependency.HtmlImport;
+import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 
 @SuppressWarnings("serial")
 @Tag("paper-chip")
-@HtmlImport("bower_components/paper-chip/paper-chip.html")
+@NpmPackage(value = "@polymer/iron-a11y-keys", version = "^3.0.1")
+@NpmPackage(value = "@polymer/iron-a11y-keys-behavior", version = "^3.0.1")
+@NpmPackage(value = "@polymer/iron-icons", version = "^3.0.1")
+@NpmPackage(value = "@polymer/paper-icon-button", version = "^3.0.2")
+@NpmPackage(value = "@polymer/paper-input", version = "^3.0.1")
+@NpmPackage(value = "@polymer/paper-item", version = "^3.0.1")
+@NpmPackage(value = "@polymer/paper-listbox", version = "^3.0.1")
+@NpmPackage(value = "@polymer/paper-material", version = "^3.0.1")
+@NpmPackage(value = "@polymer/paper-ripple", version = "^3.0.1")
+@NpmPackage(value = "@polymer/paper-styles", version = "^3.0.1")
+@JavaScript("./paper-chip.js")
 final class Chip extends Component {
 
 	private String label;
