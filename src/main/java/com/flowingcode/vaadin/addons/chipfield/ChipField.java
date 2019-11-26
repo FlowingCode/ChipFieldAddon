@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,6 +46,7 @@ import com.vaadin.flow.data.binder.HasDataProvider;
 import com.vaadin.flow.data.binder.HasItemsAndComponents;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.shared.Registration;
 
 import elemental.json.JsonArray;
@@ -69,10 +69,12 @@ import elemental.json.impl.JreJsonFactory;
 public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 		implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 
+	public static final String CHIP_LABEL = "event.detail.chipLabel";
+	
 	private DataProvider<T, ?> availableItems = DataProvider.ofCollection(new ArrayList<T>());
-	private Map<String, T> selectedItems = new HashMap<>();
+	private final Map<String, T> selectedItems = new HashMap<>();
 	private ItemLabelGenerator<T> itemLabelGenerator;
-	private Function<String, T> newItemHandler;
+	private SerializableFunction<String, T> newItemHandler;
 
 	@SafeVarargs
 	public ChipField(String label, ItemLabelGenerator<T> itemLabelGenerator, T... availableItems) {
@@ -84,14 +86,14 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 
 	@SafeVarargs
 	public ChipField(String label, T... availableItems) {
-		this(label, item -> item.toString(), availableItems);
+		this(label, Object::toString, availableItems);
 	}
 
 	private void configure() {
 		configureItems();
 		getElement().addEventListener("chip-created", e -> {
 			JsonObject eventData = e.getEventData();
-			String chipLabel = eventData.get("event.detail.chipLabel").asString();
+			String chipLabel = eventData.get(CHIP_LABEL).asString();
 			Stream<T> streamItems = availableItems.fetch(new Query<>());
 			Optional<T> newItem = streamItems.filter(item -> itemLabelGenerator.apply(item).equals(chipLabel))
 					.findFirst();
@@ -105,17 +107,18 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 					T item = this.newItemHandler.apply(chipLabel);
 					selectedItems.put(chipLabel, item);
 					this.setValue(new ArrayList<T>(selectedItems.values()));
-				} else
+				} else {
 					throw new IllegalStateException(
 							"Adding new items is not allowed, but still receiving new items (not present in DataProvider) from client-side. Probably wrong configuration.");
+				}
 			}
-		}).addEventData("event.detail.chipLabel");
+		}).addEventData(CHIP_LABEL);
 		getElement().addEventListener("chip-removed", e -> {
 			JsonObject eventData = e.getEventData();
-			String chipLabel = eventData.get("event.detail.chipLabel").asString();
+			String chipLabel = eventData.get(CHIP_LABEL).asString();
 			T itemToRemove = selectedItems.remove(chipLabel);
 			getValue().remove(itemToRemove);
-		}).addEventData("event.detail.chipLabel");
+		}).addEventData(CHIP_LABEL);
 	}
 
 	private void configureItems() {
@@ -137,7 +140,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	}
 
 	private List<Chip> generateSelectedChips(List<T> itemsToGenerate) {
-		return itemsToGenerate.stream().map(item -> generateChip(item)).collect(Collectors.toList());
+		return itemsToGenerate.stream().map(this::generateChip).collect(Collectors.toList());
 	}
 
 	private Chip generateChip(T item) {
@@ -241,17 +244,17 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	}
 
 	public void validate() {
-		getElement().callFunction("validate");
+		getElement().callJsFunction("validate");
 	}
 
 	// EVENTS
 	@DomEvent("chip-removed")
-	static public class ChipRemovedEvent<T> extends ComponentEvent<ChipField<T>> {
+	public static class ChipRemovedEvent<T> extends ComponentEvent<ChipField<T>> {
 
 		private final String chipLabel;
 
 		public ChipRemovedEvent(ChipField<T> source, boolean fromClient,
-				@EventData("event.detail.chipLabel") String chipLabel) {
+				@EventData(CHIP_LABEL) String chipLabel) {
 			super(source, fromClient);
 			this.chipLabel = chipLabel;
 		}
@@ -262,12 +265,12 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	}
 
 	@DomEvent("chip-created")
-	static public class ChipCreatedEvent<T> extends ComponentEvent<ChipField<T>> {
+	public static class ChipCreatedEvent<T> extends ComponentEvent<ChipField<T>> {
 
 		private final String chipLabel;
 
 		public ChipCreatedEvent(ChipField<T> source, boolean fromClient,
-				@EventData("event.detail.chipLabel") String chipLabel) {
+				@EventData(CHIP_LABEL) String chipLabel) {
 			super(source, fromClient);
 			this.chipLabel = chipLabel;
 		}
@@ -291,7 +294,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 		this.itemLabelGenerator = itemLabelGenerator;
 	}
 
-	public void setNewItemHandler(Function<String, T> handler) {
+	public void setNewItemHandler(SerializableFunction<String, T> handler) {
 		this.newItemHandler = handler;
 		this.setAllowAdditionalItems(true);
 	}
@@ -306,7 +309,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	}
 
 	public void addSelectedItem(T newItem) {
-		if (!availableItems.fetch(new Query<>()).anyMatch(item -> item.equals(newItem)) && !isAllowAdditionalItems()) {
+		if (availableItems.fetch(new Query<>()).noneMatch(item -> item.equals(newItem)) && !isAllowAdditionalItems()) {
 			throw new UnsupportedOperationException("Cannot select item '" + newItem
 					+ "', because is not present in DataProvider, and adding new items is not permitted.");
 		} else {
