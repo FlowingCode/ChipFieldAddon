@@ -4,11 +4,11 @@
 
 # Chips Addon
 
-Vaadin Flow integration of https://github.com/ThomasCybulski/paper-chip
+Vaadin Flow integration of https://github.com/ThomasCybulski/paper-chip, based on https://github.com/bastiion/paper-chip for Polymer 3 support
 
 ## Online demo
 
-Try the add-on demo at http://addonsv10.flowingcode.com/chipfield
+Try the add-on demo at http://addonsv14.flowingcode.com/chipfield
 
 ## Download release
 
