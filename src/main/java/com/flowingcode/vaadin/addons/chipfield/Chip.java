@@ -39,19 +39,19 @@ import com.vaadin.flow.component.icon.Icon;
 @NpmPackage(value = "@polymer/paper-ripple", version = "^3.0.1")
 @NpmPackage(value = "@polymer/paper-styles", version = "^3.0.1")
 @JavaScript("./paper-chip.js")
-final class Chip extends Component {
+public class Chip extends Component {
 
 	private String label;
 	private boolean closable;
 	private Icon icon;
 
-	Chip(String label, boolean closable, Icon icon) {
+	public Chip(String label, boolean closable, Icon icon) {
 		this.setLabel(label);
 		this.setClosable(closable);
 		this.setIcon(icon);
 	}
 
-	Chip(String chipText) {
+	public Chip(String chipText) {
 		this(chipText, true, null);
 	}
 
