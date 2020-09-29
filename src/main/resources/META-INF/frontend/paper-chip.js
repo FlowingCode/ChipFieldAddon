@@ -165,7 +165,7 @@ class PaperChip extends PolymerElement {
             }
         </style>
 
-        <div class\$="[[_computePaperChipClass(noHover, selected)]]">
+        <div on-click="_clicked" class\$="[[_computePaperChipClass(noHover, selected)]]">
             <span class="avatar"><slot name="avatar"></slot></span>
             <span class="label">[[label]]</span>
             <div hidden\$="[[!closable]]" class="closeIcon" on-click="_remove">
@@ -186,18 +186,27 @@ class PaperChip extends PolymerElement {
     }
 
     _remove(event) {
-				this.dispatchEvent(new CustomEvent('chip-removed', {
+			event.stopPropagation();
+			this._dispatch('chip-removed');
+				if (!this.noAutoDomRemoval && this.parentNode.id != 'slot2' && this.parentNode.querySelector("dom-repeat") === null) {
+            this.parentNode.removeChild(this);
+				}
+    }
+	
+	_clicked(event){
+		event.stopPropagation();
+		this._dispatch('chip-clicked');
+	}
+
+	_dispatch(eventName){
+		this.dispatchEvent(new CustomEvent(eventName, {
             detail: {
                 'chipLabel': this.label
             },
             composed: true,
             bubbles: true
 				}));
-				if (!this.noAutoDomRemoval && this.parentNode.id != 'slot2' && this.parentNode.querySelector("dom-repeat") === null) {
-            this.parentNode.removeChild(this);
-				}
-    }
-
+	}
 }
 
 window.customElements.define(PaperChip.is, PaperChip);
