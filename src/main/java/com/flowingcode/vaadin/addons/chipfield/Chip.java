@@ -41,6 +41,7 @@ import com.vaadin.flow.component.icon.Icon;
 @JavaScript("./paper-chip.js")
 public class Chip extends Component {
 
+	public static final String CHIP_LABEL = "event.detail.chipLabel";
 	private String label;
 	private boolean closable;
 	private Icon icon;

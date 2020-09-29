@@ -19,16 +19,6 @@
  */
 package com.flowingcode.vaadin.addons.chipfield;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ComponentEvent;
@@ -48,10 +38,18 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.shared.Registration;
-
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import elemental.json.impl.JreJsonFactory;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings("serial")
 @Tag("paper-chip-input-autocomplete")
@@ -118,6 +116,10 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 			String chipLabel = eventData.get(CHIP_LABEL).asString();
 			T itemToRemove = selectedItems.remove(chipLabel);
 			getValue().remove(itemToRemove);
+		}).addEventData(CHIP_LABEL);
+		getElement().addEventListener("chip-clicked", e -> {
+			JsonObject eventData = e.getEventData();
+			String chipLabel = eventData.get(CHIP_LABEL).asString();
 		}).addEventData(CHIP_LABEL);
 	}
 
@@ -325,6 +327,26 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 		this.selectedItems.remove(itemLabelGenerator.apply(itemToRemove), itemToRemove);
 		this.removeClientChipWithoutEvent(generateChip(itemToRemove));
 		this.fireEvent(new ChipRemovedEvent<>(this, false, itemLabelGenerator.apply(itemToRemove)));
+	}
+
+	@DomEvent("chip-clicked")
+	public static class ChipClickedEvent<T> extends ComponentEvent<ChipField<T>> {
+
+		private final String chipLabel;
+
+		public ChipClickedEvent(ChipField<T> source, boolean fromClient, @EventData(CHIP_LABEL) String chipLabel) {
+			super(source, fromClient);
+			this.chipLabel = chipLabel;
+		}
+
+		public String getChipLabel() {
+			return chipLabel;
+		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Registration addChipClickedListener(ComponentEventListener<ChipClickedEvent<T>> listener) {
+		return addListener(ChipClickedEvent.class, (ComponentEventListener) listener);
 	}
 
 }

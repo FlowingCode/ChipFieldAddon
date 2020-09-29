@@ -19,11 +19,6 @@
  */
 package com.flowingcode.vaadin.addons.chipfield;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
@@ -32,6 +27,10 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.Route;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 @Route("")
@@ -61,6 +60,7 @@ public class DemoView extends VerticalLayout {
 
     	chf.addChipCreatedListener(ev->Notification.show("Chip: " + ev.getChipLabel() + " Created by client: " + ev.isFromClient() + "!",5000,Position.BOTTOM_END));
     	chf.addChipRemovedListener(ev->Notification.show("Chip: " + ev.getChipLabel() + " Removed by client: " + ev.isFromClient() + "!",5000,Position.BOTTOM_END));
+		chf.addChipClickedListener(ev->Notification.show("Chip: " + ev.getChipLabel() + " Clicked!", 5000, Position.BOTTOM_END));
     	
     	VerticalLayout vl = new VerticalLayout(chf,new HorizontalLayout(b,b2));
         add(vl);
