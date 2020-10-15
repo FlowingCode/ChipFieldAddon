@@ -1,5 +1,6 @@
 package com.flowingcode.vaadin.addons.chipfield;
 
+import com.flowingcode.vaadin.addons.DemoLayout;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.html.IFrame;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -10,7 +11,7 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.Route;
 
 @SuppressWarnings("serial")
-@Route("chipfield")
+@Route(value = "chipfield", layout = DemoLayout.class)
 public class ChipfieldDemoView extends VerticalLayout {
 
 	private static final String DATAPROVIDER_DEMO = "Data Provider";
