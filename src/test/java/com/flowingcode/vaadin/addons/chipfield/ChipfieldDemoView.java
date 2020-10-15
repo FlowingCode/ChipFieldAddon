@@ -55,28 +55,28 @@ public class ChipfieldDemoView extends VerticalLayout {
 		setSizeFull();
 		
 		tabs.addSelectedChangeListener(e -> {
-			this.removeAll();
+			removeAll();
 			switch (e.getSelectedTab().getLabel()) {
 			case DATAPROVIDER_DEMO:
-				iframe.getElement().setAttribute("srcdoc", getSrcdoc(DATAPROVIDER_DEMO));
+				iframe.getElement().setAttribute("srcdoc", getSrcdoc(DATAPROVIDER_SOURCE));
 				layout.addToPrimary(new DataProviderDemo());
 				layout.addToSecondary(iframe);
 				add(tabs, layout);
 				break;
-			case "Restricted":
-				iframe.getElement().setAttribute("srcdoc", getSrcdoc(RESTRICTED_DEMO));
+			case RESTRICTED_DEMO:
+				iframe.getElement().setAttribute("srcdoc", getSrcdoc(RESTRICTED_SOURCE));
 				layout.addToPrimary(new RestrictedDemo());
 				layout.addToSecondary(iframe);
 				add(tabs, layout);
 				break;
-			case "Disabled":
-				iframe.getElement().setAttribute("srcdoc", getSrcdoc(DISABLED_DEMO));
+			case DISABLED_DEMO:
+				iframe.getElement().setAttribute("srcdoc", getSrcdoc(DISABLED_SOURCE));
 				layout.addToPrimary(new DisabledDemo());
 				layout.addToSecondary(iframe);
 				add(tabs, layout);
 				break;
-			case "Binder":
-				iframe.getElement().setAttribute("srcdoc", getSrcdoc(BINDER_DEMO));
+			case BINDER_DEMO:
+				iframe.getElement().setAttribute("srcdoc", getSrcdoc(BINDER_SOURCE));
 				layout.addToPrimary(new BinderDemo());
 				layout.addToSecondary(iframe);
 				add(tabs, layout);
@@ -88,30 +88,8 @@ public class ChipfieldDemoView extends VerticalLayout {
 		});
 	}
 
-	private String getSrcdoc(String demo) {
-		String response;
-		switch (demo) {
-		case DATAPROVIDER_DEMO:
-			response = "<html style=\"overflow-y:hidden; height:100%;\"><body style=\"overflow-y: scroll; height:100%;\"><script src=\"http://gist-it.appspot.com/"
-					+ DATAPROVIDER_SOURCE + "\"></script></body></html>";
-			break;
-		case RESTRICTED_DEMO:
-			response = "<html style=\"overflow-y:hidden; height:100%;\"><body style=\"overflow-y: scroll; height:100%;\"><script src=\"http://gist-it.appspot.com/"
-					+ RESTRICTED_SOURCE + "\"></script></body></html>";
-			break;
-		case DISABLED_DEMO:
-			response = "<html style=\"overflow-y:hidden; height:100%;\"><body style=\"overflow-y: scroll; height:100%;\"><script src=\"https://gist-it.appspot.com/"
-					+ DISABLED_SOURCE + "\"></script></body></html>";
-			break;
-		case BINDER_DEMO:
-			response = "<html style=\"overflow-y:hidden; height:100%;\"><body style=\"overflow-y: scroll; height:100%;\"><script src=\"https://gist-it.appspot.com/"
-					+ BINDER_SOURCE + "\"></script></body></html>";
-			break;
-		default:
-			response = "<html style=\"overflow-y:hidden; height:100%;\"><body style=\"overflow-y: scroll; height:100%;\"><script src=\"https://gist-it.appspot.com/"
-					+ DATAPROVIDER_SOURCE + "\"></script></body></html>";
-			break;
-		}
-		return response;
+	private String getSrcdoc(String sourceUrl) {
+		return "<html style=\"overflow-y:hidden; height:100%;\"><body style=\"overflow-y: scroll; height:100%;\"><script src=\"https://gist-it.appspot.com/"
+				+ sourceUrl + "\"></script></body></html>";
 	}
 }
