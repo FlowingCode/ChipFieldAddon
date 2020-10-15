@@ -25,9 +25,9 @@ public class BinderDemo extends VerticalLayout {
 				event -> Notification.show(
 						"Planet: " + p.getName() + ", features: "
 								+ p.getConfiguration().stream().collect(Collectors.joining(",")),
-						5000, Position.BOTTOM_END));
+						5000, Position.BOTTOM_START));
 		chf5.addValueChangeListener(
-				newItem -> Notification.show("Items: " + newItem.getValue(), 5000, Position.BOTTOM_END));
+				newItem -> Notification.show("Items: " + newItem.getValue(), 5000, Position.BOTTOM_START));
 
 		add(chf5, show);
 	}

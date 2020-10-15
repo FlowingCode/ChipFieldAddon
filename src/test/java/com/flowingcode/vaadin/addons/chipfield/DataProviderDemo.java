@@ -30,7 +30,7 @@ public class DataProviderDemo extends VerticalLayout {
 		Button b = new Button("Obtain selected planets");
 		b.addClickListener(event -> Notification.show(
 				"Planets: " + chf.getValue().stream().map(planet -> planet.getName()).collect(Collectors.joining(",")),
-				5000, Position.BOTTOM_END));
+				5000, Position.BOTTOM_START));
 
 		Button b2 = new Button("Add random planet");
 		b2.addClickListener(event -> {
@@ -42,10 +42,10 @@ public class DataProviderDemo extends VerticalLayout {
 
 		chf.addChipCreatedListener(
 				ev -> Notification.show("Chip: " + ev.getChipLabel() + " Created by client: " + ev.isFromClient() + "!",
-						5000, Position.BOTTOM_END));
+						5000, Position.BOTTOM_START));
 		chf.addChipRemovedListener(
 				ev -> Notification.show("Chip: " + ev.getChipLabel() + " Removed by client: " + ev.isFromClient() + "!",
-						5000, Position.BOTTOM_END));
+						5000, Position.BOTTOM_START));
 		chf.addChipClickedListener(
 				ev -> Notification.show("Chip: " + ev.getChipLabel() + " Clicked!", 5000, Position.BOTTOM_END));
 
