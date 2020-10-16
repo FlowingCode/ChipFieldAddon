@@ -33,7 +33,7 @@ public class ChipfieldDemoView extends VerticalLayout {
 		layout.setSizeFull();
 		IFrame iframe = new IFrame();
 		iframe.getElement().setAttribute("frameborder", "0");
-		iframe.getElement().setAttribute("srcdoc", getSrcdoc(DATAPROVIDER_DEMO));
+		iframe.getElement().setAttribute("srcdoc", getSrcdoc(DATAPROVIDER_SOURCE));
 		iframe.setSizeFull();
 		layout.addToSecondary(iframe);
 
