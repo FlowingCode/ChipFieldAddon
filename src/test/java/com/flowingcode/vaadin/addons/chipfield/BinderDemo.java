@@ -13,12 +13,12 @@ public class BinderDemo extends VerticalLayout {
 
 	public BinderDemo() {
 		Planet p = new Planet("A new planet");
-		ChipField<String> chf5 = new ChipField<>(
+		ChipField<String> chf = new ChipField<>(
 				"Choose planet features (Binder demo, try with: 'Rings', 'Moons', 'Water', etc.)");
-		chf5.setWidth("500px");
-		chf5.setItems(Arrays.asList("Rings", "Moons", "Water", "Rocks", "Lava", "Ice", "Cold", "Heat", "Atmosphere"));
+		chf.setWidthFull();
+		chf.setItems(Arrays.asList("Rings", "Moons", "Water", "Rocks", "Lava", "Ice", "Cold", "Heat", "Atmosphere"));
 		Binder<Planet> binder = new Binder<>();
-		binder.bind(chf5, Planet::getConfiguration, Planet::setConfiguration);
+		binder.bind(chf, Planet::getConfiguration, Planet::setConfiguration);
 		binder.setBean(p);
 		Button show = new Button("Show planet configuration");
 		show.addClickListener(
@@ -26,9 +26,9 @@ public class BinderDemo extends VerticalLayout {
 						"Planet: " + p.getName() + ", features: "
 								+ p.getConfiguration().stream().collect(Collectors.joining(",")),
 						5000, Position.BOTTOM_START));
-		chf5.addValueChangeListener(
+		chf.addValueChangeListener(
 				newItem -> Notification.show("Items: " + newItem.getValue(), 5000, Position.BOTTOM_START));
 
-		add(chf5, show);
+		add(chf, show);
 	}
 }

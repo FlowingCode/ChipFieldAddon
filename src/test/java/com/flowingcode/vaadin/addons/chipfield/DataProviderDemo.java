@@ -22,7 +22,7 @@ public class DataProviderDemo extends VerticalLayout {
 
 		ChipField<Planet> chf = new ChipField<>("Select some planets (Mercury, Venus, Earth, etc.)",
 				planet -> planet.getName());
-		chf.setWidth("100%");
+		chf.setWidthFull();
 		chf.setDataProvider(ldp);
 		chf.setClosable(true);
 		chf.setNewItemHandler(label -> new Planet(label));
