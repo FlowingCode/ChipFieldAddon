@@ -33,6 +33,8 @@ public class ChipfieldDemoView extends VerticalLayout {
 		layout.setSizeFull();
 		IFrame iframe = new IFrame();
 		iframe.getElement().setAttribute("frameborder", "0");
+		iframe.setMinHeight("0");
+		iframe.setMinWidth("0");
 		iframe.getElement().setAttribute("srcdoc", getSrcdoc(DATAPROVIDER_SOURCE));
 		iframe.setSizeFull();
 		layout.addToSecondary(iframe);
@@ -54,7 +56,6 @@ public class ChipfieldDemoView extends VerticalLayout {
 			} else {
 				layout.setOrientation(Orientation.VERTICAL);
 			}
-			layout.setSplitterPosition(50);
 			layout.getPrimaryComponent().getElement().setAttribute("style", "width: 100%; height: 100%");
 			iframe.setSizeFull();
 		});
