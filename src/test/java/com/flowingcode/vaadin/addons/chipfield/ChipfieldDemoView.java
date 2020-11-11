@@ -20,6 +20,7 @@
 package com.flowingcode.vaadin.addons.chipfield;
 
 import com.flowingcode.vaadin.addons.DemoLayout;
+import com.flowingcode.vaadin.addons.GithubLink;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.IFrame;
@@ -34,6 +35,7 @@ import com.vaadin.flow.router.Route;
 @SuppressWarnings("serial")
 @StyleSheet("context://frontend/styles/demo-styles.css")
 @Route(value = "chipfield", layout = DemoLayout.class)
+@GithubLink("https://github.com/FlowingCode/ChipFieldAddon")
 public class ChipfieldDemoView extends VerticalLayout {
 
 	private static final String DATAPROVIDER_DEMO = "Data Provider";
