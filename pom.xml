@@ -64,6 +64,20 @@
             <id>webjars</id>
             <url>https://dl.bintray.com/webjars/maven</url>
         </repository>
+        <repository>
+			<id>FlowingCode Releases</id>
+			<url>https://maven.flowingcode.com/releases</url>
+		</repository>
+		<repository>
+			<id>FlowingCode Snapshots</id>
+			<url>https://maven.flowingcode.com/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
     </repositories>
 
     <dependencies>
