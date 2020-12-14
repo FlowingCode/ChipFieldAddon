@@ -97,14 +97,14 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 					.findFirst();
 			if (newItem.isPresent()) {
 				selectedItems.put(chipLabel, newItem.get());
-				this.setValue(new ArrayList<T>(selectedItems.values()));
+				this.setValue(new ArrayList<>(selectedItems.values()));
 			} else {
 				if (isAllowAdditionalItems()) {
 					if (newItemHandler == null)
 						throw new IllegalStateException("You need to setup a NewItemHandler");
 					T item = this.newItemHandler.apply(chipLabel);
 					selectedItems.put(chipLabel, item);
-					this.setValue(new ArrayList<T>(selectedItems.values()));
+					setValue(new ArrayList<>(selectedItems.values()));
 				} else {
 					throw new IllegalStateException(
 							"Adding new items is not allowed, but still receiving new items (not present in DataProvider) from client-side. Probably wrong configuration.");
@@ -118,8 +118,6 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 			getValue().remove(itemToRemove);
 		}).addEventData(CHIP_LABEL);
 		getElement().addEventListener("chip-clicked", e -> {
-			JsonObject eventData = e.getEventData();
-			String chipLabel = eventData.get(CHIP_LABEL).asString();
 		}).addEventData(CHIP_LABEL);
 	}
 
@@ -150,19 +148,19 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	}
 
 	private void appendClientChipWithoutEvent(Chip chip) {
-		String function = "			(function _appendChipWithoutEvent() {" + "				if ($0.allowDuplicates) {"
-				+ "					$0.push('items', $1);" + "				} else if ($0.items.indexOf($1) == -1) {"
-				+ "					$0.push('items', $1);" + "				}" + "				$0.required = false;"
-				+ "				$0.autoValidate = false;" + "				$0._value = '';" + "			})()";
-		UI.getCurrent().getPage().executeJs(function, this.getElement(), chip.getLabel());
+		String function = "(function _appendChipWithoutEvent() {" + "if ($0.allowDuplicates) {"
+				+ "$0.push('items', $1);" + "} else if ($0.items.indexOf($1) == -1) {"
+				+ "$0.push('items', $1);}" + "$0.required = false;"
+				+ "$0.autoValidate = false;" + "$0._value = '';" + "})()";
+		UI.getCurrent().getPage().executeJs(function, getElement(), chip.getLabel());
 	}
 
 	private void removeClientChipWithoutEvent(Chip chip) {
-		String function = "			(function _removeChipByLabel() {"
-				+ "				const index = $0.items.indexOf($1);" + "				if (index != -1) {"
-				+ "					$0.items.splice('availableItems', index, 1);" + "				}"
-				+ "			})()";
-		UI.getCurrent().getPage().executeJs(function, this.getElement(), chip.getLabel());
+		String function = "(function _removeChipByLabel() {"
+				+ "const index = $0.items.indexOf($1);" + "if (index != -1) {"
+				+ "$0.items.splice('availableItems', index, 1);}"
+				+ "})()";
+		UI.getCurrent().getPage().executeJs(function, getElement(), chip.getLabel());
 	}
 
 	public void setAvailableItems(List<T> items) {
