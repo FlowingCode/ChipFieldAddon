@@ -21,9 +21,7 @@ package com.flowingcode.vaadin.addons.chipfield;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -38,7 +36,6 @@ import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.data.binder.HasDataProvider;
@@ -71,7 +68,6 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	public static final String CHIP_LABEL = "event.detail.chipLabel";
 
 	private DataProvider<T, ?> availableItems = DataProvider.ofCollection(new ArrayList<T>());
-	private final Map<String, T> selectedItems = new HashMap<>();
 	private ItemLabelGenerator<T> itemLabelGenerator;
 	private SerializableFunction<String, T> newItemHandler;
 
@@ -93,30 +89,24 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 		getElement().addEventListener("chip-created", e -> {
 			JsonObject eventData = e.getEventData();
 			String chipLabel = eventData.get(CHIP_LABEL).asString();
-			Stream<T> streamItems = availableItems.fetch(new Query<>());
-			Optional<T> newItem = streamItems.filter(item -> itemLabelGenerator.apply(item).equals(chipLabel)).findFirst();
-			if (newItem.isPresent()) {
-				selectedItems.put(chipLabel, newItem.get());
-				setValue(new ArrayList<>(selectedItems.values()));
-			} else {
+			T newItem = findItemByLabel(chipLabel).orElseGet(() -> {
 				if (isAllowAdditionalItems()) {
 					if (newItemHandler == null) {
 						throw new IllegalStateException("You need to setup a NewItemHandler");
 					}
-					T item = this.newItemHandler.apply(chipLabel);
-					selectedItems.put(chipLabel, item);
-					setValue(new ArrayList<>(selectedItems.values()));
+					return this.newItemHandler.apply(chipLabel);
 				} else {
 					throw new IllegalStateException(
 							"Adding new items is not allowed, but still receiving new items (not present in DataProvider) from client-side. Probably wrong configuration.");
 				}
-			}
+			});
+			addSelectedItem(newItem, true);
 		}).addEventData(CHIP_LABEL);
+
 		getElement().addEventListener("chip-removed", e -> {
 			JsonObject eventData = e.getEventData();
 			String chipLabel = eventData.get(CHIP_LABEL).asString();
-			T itemToRemove = selectedItems.remove(chipLabel);
-			getValue().remove(itemToRemove);
+			findItemByLabel(chipLabel).ifPresent(item -> removeSelectedItem(item, true));
 		}).addEventData(CHIP_LABEL);
 		getElement().addEventListener("chip-clicked", e -> {
 		}).addEventData(CHIP_LABEL);
@@ -140,20 +130,21 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 		configure();
 	}
 
-	private void appendClientChipWithoutEvent(String label) {
-		String function = "(function _appendChipWithoutEvent() {" + "if ($0.allowDuplicates) {"
-				+ "$0.push('items', $1);" + "} else if ($0.items.indexOf($1) == -1) {"
-				+ "$0.push('items', $1);}" + "$0.required = false;"
-				+ "$0.autoValidate = false;" + "$0._value = '';" + "})()";
-		UI.getCurrent().getPage().executeJs(function, getElement(), label);
+	@Override
+	protected void setPresentationValue(List<T> newPresentationValue) {
+		setClientChipWithoutEvent(newPresentationValue.stream().map(itemLabelGenerator).toArray(String[]::new));
 	}
 
-	private void removeClientChipWithoutEvent(String label) {
-		String function = "(function _removeChipByLabel() {"
-				+ "const index = $0.items.indexOf($1);" + "if (index != -1) {"
-				+ "$0.items.splice('availableItems', index, 1);}"
-				+ "})()";
-		UI.getCurrent().getPage().executeJs(function, getElement(), label);
+	private Optional<T> findItemByLabel(String label) {
+		return availableItems.fetch(new Query<>()).filter(item -> itemLabelGenerator.apply(item).equals(label)).findFirst();
+	}
+
+	private void setClientChipWithoutEvent(String[] labels) {
+		getElement().executeJs("this.splice('items', 0, this.items.length);");
+		for (String label : labels) {
+			getElement().executeJs("this.push('items', $0);", label);
+		}
+		getElement().executeJs("this.required = false; this.autoValidate = false; this._value = '';");
 	}
 
 	public void setAvailableItems(List<T> items) {
@@ -291,31 +282,46 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	}
 
 	@Override
-	protected void setPresentationValue(List<T> newPresentationValue) {
-	}
-
-	@Override
 	public void setDataProvider(DataProvider<T, ?> dataProvider) {
 		this.availableItems = dataProvider;
 	}
 
 	public void addSelectedItem(T newItem) {
-		if (availableItems.fetch(new Query<>()).noneMatch(item -> item.equals(newItem)) && !isAllowAdditionalItems()) {
-			throw new UnsupportedOperationException(
-					"Cannot select item '" + newItem + "', because is not present in DataProvider, and adding new items is not permitted.");
+		String label = itemLabelGenerator.apply(newItem);
+		if (isAllowAdditionalItems()) {
+			addSelectedItem(findItemByLabel(label).orElse(newItem), false);
 		} else {
-			getValue().add(newItem);
-			this.selectedItems.put(itemLabelGenerator.apply(newItem), newItem);
-			this.appendClientChipWithoutEvent(itemLabelGenerator.apply(newItem));
-			fireEvent(new ChipCreatedEvent<>(this, false, itemLabelGenerator.apply(newItem)));
+			addSelectedItem(findItemByLabel(label).orElseThrow(() -> new UnsupportedOperationException(
+					"Cannot select item '" + newItem + "', because is not present in DataProvider, and adding new items is not permitted.")), false);
+		}
+	}
+
+	private void addSelectedItem(T newItem, boolean fromClient) {
+		List<T> value = getValue();
+		if (!value.contains(newItem)) {
+			value = new ArrayList<>(value);
+			value.add(newItem);
+			setModelValue(value, fromClient);
+			if (!fromClient) {
+				setPresentationValue(value);
+				fireEvent(new ChipCreatedEvent<>(this, fromClient, itemLabelGenerator.apply(newItem)));
+			}
 		}
 	}
 
 	public void removeSelectedItem(T itemToRemove) {
-		getValue().remove(itemToRemove);
-		this.selectedItems.remove(itemLabelGenerator.apply(itemToRemove), itemToRemove);
-		this.removeClientChipWithoutEvent(itemLabelGenerator.apply(itemToRemove));
-		fireEvent(new ChipRemovedEvent<>(this, false, itemLabelGenerator.apply(itemToRemove)));
+		removeSelectedItem(itemToRemove, false);
+	}
+
+	private void removeSelectedItem(T itemToRemove, boolean fromClient) {
+		List<T> value = new ArrayList<>(getValue());
+		if (value.remove(itemToRemove)) {
+			setModelValue(value, fromClient);
+			if (!fromClient) {
+				setPresentationValue(value);
+				fireEvent(new ChipRemovedEvent<>(this, fromClient, itemLabelGenerator.apply(itemToRemove)));
+			}
+		}
 	}
 
 	@DomEvent("chip-clicked")
