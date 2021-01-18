@@ -19,6 +19,15 @@
  */
 package com.flowingcode.vaadin.addons.chipfield;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
+
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ComponentEvent;
@@ -38,18 +47,10 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.shared.Registration;
+
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import elemental.json.impl.JreJsonFactory;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @SuppressWarnings("serial")
 @Tag("paper-chip-input-autocomplete")
@@ -93,15 +94,15 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 			JsonObject eventData = e.getEventData();
 			String chipLabel = eventData.get(CHIP_LABEL).asString();
 			Stream<T> streamItems = availableItems.fetch(new Query<>());
-			Optional<T> newItem = streamItems.filter(item -> itemLabelGenerator.apply(item).equals(chipLabel))
-					.findFirst();
+			Optional<T> newItem = streamItems.filter(item -> itemLabelGenerator.apply(item).equals(chipLabel)).findFirst();
 			if (newItem.isPresent()) {
 				selectedItems.put(chipLabel, newItem.get());
-				this.setValue(new ArrayList<>(selectedItems.values()));
+				setValue(new ArrayList<>(selectedItems.values()));
 			} else {
 				if (isAllowAdditionalItems()) {
-					if (newItemHandler == null)
+					if (newItemHandler == null) {
 						throw new IllegalStateException("You need to setup a NewItemHandler");
+					}
 					T item = this.newItemHandler.apply(chipLabel);
 					selectedItems.put(chipLabel, item);
 					setValue(new ArrayList<>(selectedItems.values()));
@@ -131,7 +132,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 			object.put("value", itemLabelGenerator.apply(item));
 			array.set(index.getAndIncrement(), object);
 		});
-		this.getElement().setPropertyJson("source", array);
+		getElement().setPropertyJson("source", array);
 	}
 
 	@Override
@@ -228,7 +229,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	}
 
 	public void setAllowAdditionalItems(boolean allowAdditionalItems) {
-		this.getElement().setProperty("additionalItems", allowAdditionalItems);
+		getElement().setProperty("additionalItems", allowAdditionalItems);
 	}
 
 	public boolean isAllowAdditionalItems() {
@@ -245,8 +246,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 
 		private final String chipLabel;
 
-		public ChipRemovedEvent(ChipField<T> source, boolean fromClient,
-				@EventData(CHIP_LABEL) String chipLabel) {
+		public ChipRemovedEvent(ChipField<T> source, boolean fromClient, @EventData(CHIP_LABEL) String chipLabel) {
 			super(source, fromClient);
 			this.chipLabel = chipLabel;
 		}
@@ -261,8 +261,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 
 		private final String chipLabel;
 
-		public ChipCreatedEvent(ChipField<T> source, boolean fromClient,
-				@EventData(CHIP_LABEL) String chipLabel) {
+		public ChipCreatedEvent(ChipField<T> source, boolean fromClient, @EventData(CHIP_LABEL) String chipLabel) {
 			super(source, fromClient);
 			this.chipLabel = chipLabel;
 		}
@@ -302,21 +301,21 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 
 	public void addSelectedItem(T newItem) {
 		if (availableItems.fetch(new Query<>()).noneMatch(item -> item.equals(newItem)) && !isAllowAdditionalItems()) {
-			throw new UnsupportedOperationException("Cannot select item '" + newItem
-					+ "', because is not present in DataProvider, and adding new items is not permitted.");
+			throw new UnsupportedOperationException(
+					"Cannot select item '" + newItem + "', because is not present in DataProvider, and adding new items is not permitted.");
 		} else {
-			this.getValue().add(newItem);
+			getValue().add(newItem);
 			this.selectedItems.put(itemLabelGenerator.apply(newItem), newItem);
 			this.appendClientChipWithoutEvent(itemLabelGenerator.apply(newItem));
-			this.fireEvent(new ChipCreatedEvent<>(this, false, itemLabelGenerator.apply(newItem)));
+			fireEvent(new ChipCreatedEvent<>(this, false, itemLabelGenerator.apply(newItem)));
 		}
 	}
 
 	public void removeSelectedItem(T itemToRemove) {
-		this.getValue().remove(itemToRemove);
+		getValue().remove(itemToRemove);
 		this.selectedItems.remove(itemLabelGenerator.apply(itemToRemove), itemToRemove);
 		this.removeClientChipWithoutEvent(itemLabelGenerator.apply(itemToRemove));
-		this.fireEvent(new ChipRemovedEvent<>(this, false, itemLabelGenerator.apply(itemToRemove)));
+		fireEvent(new ChipRemovedEvent<>(this, false, itemLabelGenerator.apply(itemToRemove)));
 	}
 
 	@DomEvent("chip-clicked")
