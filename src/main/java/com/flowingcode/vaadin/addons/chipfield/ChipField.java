@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -68,7 +68,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 		implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 
 	public static final String CHIP_LABEL = "event.detail.chipLabel";
-	
+
 	private DataProvider<T, ?> availableItems = DataProvider.ofCollection(new ArrayList<T>());
 	private final Map<String, T> selectedItems = new HashMap<>();
 	private ItemLabelGenerator<T> itemLabelGenerator;
@@ -139,28 +139,20 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 		configure();
 	}
 
-	private List<Chip> generateSelectedChips(List<T> itemsToGenerate) {
-		return itemsToGenerate.stream().map(this::generateChip).collect(Collectors.toList());
-	}
-
-	private Chip generateChip(T item) {
-		return new Chip(itemLabelGenerator.apply(item));
-	}
-
-	private void appendClientChipWithoutEvent(Chip chip) {
+	private void appendClientChipWithoutEvent(String label) {
 		String function = "(function _appendChipWithoutEvent() {" + "if ($0.allowDuplicates) {"
 				+ "$0.push('items', $1);" + "} else if ($0.items.indexOf($1) == -1) {"
 				+ "$0.push('items', $1);}" + "$0.required = false;"
 				+ "$0.autoValidate = false;" + "$0._value = '';" + "})()";
-		UI.getCurrent().getPage().executeJs(function, getElement(), chip.getLabel());
+		UI.getCurrent().getPage().executeJs(function, getElement(), label);
 	}
 
-	private void removeClientChipWithoutEvent(Chip chip) {
+	private void removeClientChipWithoutEvent(String label) {
 		String function = "(function _removeChipByLabel() {"
 				+ "const index = $0.items.indexOf($1);" + "if (index != -1) {"
 				+ "$0.items.splice('availableItems', index, 1);}"
 				+ "})()";
-		UI.getCurrent().getPage().executeJs(function, getElement(), chip.getLabel());
+		UI.getCurrent().getPage().executeJs(function, getElement(), label);
 	}
 
 	public void setAvailableItems(List<T> items) {
@@ -168,15 +160,15 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	}
 
 	public String getLabel() {
-		return this.getElement().getProperty("label");
+		return getElement().getProperty("label");
 	}
 
 	public void setLabel(String label) {
-		this.getElement().setProperty("label", label);
+		getElement().setProperty("label", label);
 	}
 
 	public String[] getChipsAsStrings() {
-		return this.generateSelectedChips(super.getValue()).stream().map(Chip::getLabel).toArray(String[]::new);
+		return super.getValue().stream().map(itemLabelGenerator).toArray(String[]::new);
 	}
 
 	public void setClosable(boolean closable) {
@@ -315,7 +307,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 		} else {
 			this.getValue().add(newItem);
 			this.selectedItems.put(itemLabelGenerator.apply(newItem), newItem);
-			this.appendClientChipWithoutEvent(generateChip(newItem));
+			this.appendClientChipWithoutEvent(itemLabelGenerator.apply(newItem));
 			this.fireEvent(new ChipCreatedEvent<>(this, false, itemLabelGenerator.apply(newItem)));
 		}
 	}
@@ -323,7 +315,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	public void removeSelectedItem(T itemToRemove) {
 		this.getValue().remove(itemToRemove);
 		this.selectedItems.remove(itemLabelGenerator.apply(itemToRemove), itemToRemove);
-		this.removeClientChipWithoutEvent(generateChip(itemToRemove));
+		this.removeClientChipWithoutEvent(itemLabelGenerator.apply(itemToRemove));
 		this.fireEvent(new ChipRemovedEvent<>(this, false, itemLabelGenerator.apply(itemToRemove)));
 	}
 
