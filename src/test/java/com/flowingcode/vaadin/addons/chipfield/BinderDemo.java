@@ -20,6 +20,8 @@
 package com.flowingcode.vaadin.addons.chipfield;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
@@ -36,7 +38,10 @@ public class BinderDemo extends VerticalLayout {
 
 		ChipField<String> chf = new ChipField<>("Choose planet features (try with: 'Rings', 'Moons', 'Water', etc.)");
 		chf.setWidthFull();
-		chf.setItems(Arrays.asList("Rings", "Moons", "Water", "Rocks", "Lava", "Ice", "Cold", "Heat", "Atmosphere"));
+
+		List<String> items = Arrays.asList("Rings", "Moons", "Water", "Rocks", "Lava", "Ice", "Cold", "Heat", "Atmosphere");
+		chf.setItems(items);
+
 		Binder<Planet> binder = new Binder<>();
 		binder.bind(chf, Planet::getFeatures, Planet::setFeatures);
 		binder.setBean(p);
@@ -47,6 +52,11 @@ public class BinderDemo extends VerticalLayout {
 		add(chf);
 		add(new Button("Show planet features",
 				e -> Notification.show("Features: " + p.getFeatures(), 5000, Position.BOTTOM_START)));
+
+		add(new Button("Random features", ev -> {
+			p.setFeatures(items.stream().filter(x -> Math.random() > 0.7).collect(Collectors.toList()));
+			binder.setBean(p);
+		}));
 
 	}
 

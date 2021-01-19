@@ -61,6 +61,17 @@ public class DataProviderDemo extends VerticalLayout {
 		chf.addChipClickedListener(
 				ev -> Notification.show("Chip: " + ev.getChipLabel() + " Clicked!", 5000, Position.BOTTOM_END));
 
+		buttons.add(new Button("All planets", ev -> {
+			chf.setValue(Planet.all());
+		}));
+
+		buttons.add(new Button("Remove Inner planets", ev -> {
+			chf.removeSelectedItem(new Planet("Mercury"));
+			chf.removeSelectedItem(new Planet("Venus"));
+			chf.removeSelectedItem(new Planet("Earth"));
+			chf.removeSelectedItem(new Planet("Mars"));
+		}));
+
 		add(new VerticalLayout(chf, buttons));
 	}
 
