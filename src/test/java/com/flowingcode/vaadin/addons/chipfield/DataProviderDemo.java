@@ -53,13 +53,13 @@ public class DataProviderDemo extends VerticalLayout {
 		}));
 
 		chf.addChipCreatedListener(
-				ev -> Notification.show("Chip: " + ev.getChipLabel() + " Created by client: " + ev.isFromClient() + "!",
+				ev -> Notification.show("Chip: " + ev.getItem() + " Created by client: " + ev.isFromClient() + "!",
 						5000, Position.BOTTOM_START));
 		chf.addChipRemovedListener(
-				ev -> Notification.show("Chip: " + ev.getChipLabel() + " Removed by client: " + ev.isFromClient() + "!",
+				ev -> Notification.show("Chip: " + ev.getItem() + " Removed by client: " + ev.isFromClient() + "!",
 						5000, Position.BOTTOM_START));
 		chf.addChipClickedListener(
-				ev -> Notification.show("Chip: " + ev.getChipLabel() + " Clicked!", 5000, Position.BOTTOM_END));
+				ev -> Notification.show("Chip: " + ev.getItem() + " Clicked!", 5000, Position.BOTTOM_END));
 
 		buttons.add(new Button("All planets", ev -> {
 			chf.setValue(Planet.all());

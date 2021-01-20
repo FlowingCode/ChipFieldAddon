@@ -71,6 +71,48 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	private ItemLabelGenerator<T> itemLabelGenerator;
 	private SerializableFunction<String, T> newItemHandler;
 
+	public abstract static class ChipEvent<T> extends ComponentEvent<ChipField<T>> {
+
+		private final String chipLabel;
+		private final T item;
+
+		public ChipEvent(ChipField<T> source, boolean fromClient, String chipLabel) {
+			super(source, fromClient);
+			this.chipLabel = chipLabel;
+			this.item = source.findItemByLabel(chipLabel).orElse(null);
+		}
+
+		public String getChipLabel() {
+			return chipLabel;
+		}
+
+		public T getItem() {
+			return item;
+		}
+
+	}
+
+	@DomEvent("chip-removed")
+	public static class ChipRemovedEvent<T> extends ChipEvent<T> {
+		public ChipRemovedEvent(ChipField<T> source, boolean fromClient, @EventData(CHIP_LABEL) String chipLabel) {
+			super(source, fromClient, chipLabel);
+		}
+	}
+
+	@DomEvent("chip-created")
+	public static class ChipCreatedEvent<T> extends ChipEvent<T> {
+		public ChipCreatedEvent(ChipField<T> source, boolean fromClient, @EventData(CHIP_LABEL) String chipLabel) {
+			super(source, fromClient, chipLabel);
+		}
+	}
+
+	@DomEvent("chip-clicked")
+	public static class ChipClickedEvent<T> extends ChipEvent<T> {
+		public ChipClickedEvent(ChipField<T> source, boolean fromClient, @EventData(CHIP_LABEL) String chipLabel) {
+			super(source, fromClient, chipLabel);
+		}
+	}
+
 	@SafeVarargs
 	public ChipField(String label, ItemLabelGenerator<T> itemLabelGenerator, T... availableItems) {
 		super(new ArrayList<>());
@@ -231,37 +273,6 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 		getElement().callJsFunction("validate");
 	}
 
-	// EVENTS
-	@DomEvent("chip-removed")
-	public static class ChipRemovedEvent<T> extends ComponentEvent<ChipField<T>> {
-
-		private final String chipLabel;
-
-		public ChipRemovedEvent(ChipField<T> source, boolean fromClient, @EventData(CHIP_LABEL) String chipLabel) {
-			super(source, fromClient);
-			this.chipLabel = chipLabel;
-		}
-
-		public String getChipLabel() {
-			return chipLabel;
-		}
-	}
-
-	@DomEvent("chip-created")
-	public static class ChipCreatedEvent<T> extends ComponentEvent<ChipField<T>> {
-
-		private final String chipLabel;
-
-		public ChipCreatedEvent(ChipField<T> source, boolean fromClient, @EventData(CHIP_LABEL) String chipLabel) {
-			super(source, fromClient);
-			this.chipLabel = chipLabel;
-		}
-
-		public String getChipLabel() {
-			return chipLabel;
-		}
-	}
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Registration addChipRemovedListener(ComponentEventListener<ChipRemovedEvent<T>> listener) {
 		return addListener(ChipRemovedEvent.class, (ComponentEventListener) listener);
@@ -321,21 +332,6 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 				setPresentationValue(value);
 				fireEvent(new ChipRemovedEvent<>(this, fromClient, itemLabelGenerator.apply(itemToRemove)));
 			}
-		}
-	}
-
-	@DomEvent("chip-clicked")
-	public static class ChipClickedEvent<T> extends ComponentEvent<ChipField<T>> {
-
-		private final String chipLabel;
-
-		public ChipClickedEvent(ChipField<T> source, boolean fromClient, @EventData(CHIP_LABEL) String chipLabel) {
-			super(source, fromClient);
-			this.chipLabel = chipLabel;
-		}
-
-		public String getChipLabel() {
-			return chipLabel;
 		}
 	}
 
