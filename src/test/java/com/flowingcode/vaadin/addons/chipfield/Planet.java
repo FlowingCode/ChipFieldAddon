@@ -85,5 +85,10 @@ public class Planet {
 		return new Planet("Planet " + Integer.toString((int) Math.round(Math.random() * 36 * 36 * 36), 36).toUpperCase());
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
+
 }
 
