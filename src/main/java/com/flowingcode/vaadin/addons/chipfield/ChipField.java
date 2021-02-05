@@ -213,28 +213,40 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 		return getElement().getProperty("closable", false);
 	}
 
+	/** @deprecated use {@link #setEnabled(boolean)} */
+	@Deprecated
 	public void setDisabled(boolean disabled) {
 		getElement().setProperty("disabled", disabled);
 	}
 
+	/** @deprecated use {@link #isEnabled()} */
+	@Deprecated
 	public boolean isDisabled() {
 		return getElement().getProperty("disabled", false);
 	}
 
+	/** @deprecated use {@link #setReadOnly()} */
+	@Deprecated
 	public void setReadonly(boolean readonly) {
-		getElement().setProperty("readonly", readonly);
+		setReadOnly(readonly);
 	}
 
+	/** @deprecated use {@link #isReadOnly()} */
+	@Deprecated
 	public boolean isReadonly() {
-		return getElement().getProperty("readonly", false);
+		return this.isReadonly();
 	}
 
+	/** @deprecated use {@link #setRequiredIndicatorVisible(boolean)} */
+	@Deprecated
 	public void setRequired(boolean required) {
 		getElement().setProperty("required", required);
 	}
 
+	/** @deprecated use {@link #isRequiredIndicatorVisible()} */
+	@Deprecated
 	public boolean isRequired() {
-		return getElement().getProperty("required", false);
+		return isRequiredIndicatorVisible();
 	}
 
 	public void setValidationPattern(String pattern) {
