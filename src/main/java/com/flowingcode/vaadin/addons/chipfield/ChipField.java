@@ -68,6 +68,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	public static final String CHIP_LABEL = "event.detail.chipLabel";
 
 	private DataProvider<T, ?> availableItems = DataProvider.ofCollection(new ArrayList<T>());
+	private List<T> additionalItems = new ArrayList<>();
 	private ItemLabelGenerator<T> itemLabelGenerator;
 	private SerializableFunction<String, T> newItemHandler;
 
@@ -178,7 +179,9 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	}
 
 	private Optional<T> findItemByLabel(String label) {
-		return availableItems.fetch(new Query<>()).filter(item -> itemLabelGenerator.apply(item).equals(label)).findFirst();
+		return Stream.concat(availableItems.fetch(new Query<>()), additionalItems.stream())
+				.filter(item -> itemLabelGenerator.apply(item).equals(label))
+				.findFirst();
 	}
 
 	private void setClientChipWithoutEvent(String[] labels) {
@@ -310,16 +313,23 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	}
 
 	public void addSelectedItem(T newItem) {
-		String label = itemLabelGenerator.apply(newItem);
-		if (isAllowAdditionalItems()) {
-			addSelectedItem(findItemByLabel(label).orElse(newItem), false);
-		} else {
-			addSelectedItem(findItemByLabel(label).orElseThrow(() -> new UnsupportedOperationException(
-					"Cannot select item '" + newItem + "', because is not present in DataProvider, and adding new items is not permitted.")), false);
-		}
+		addSelectedItem(newItem, false);
 	}
 
 	private void addSelectedItem(T newItem, boolean fromClient) {
+		String label = itemLabelGenerator.apply(newItem);
+		if (isAllowAdditionalItems()) {
+			addSelectedItemInternal(findItemByLabel(label).orElseGet(() -> {
+				additionalItems.add(newItem);
+				return newItem;
+			}), fromClient);
+		} else {
+			addSelectedItemInternal(findItemByLabel(label).orElseThrow(() -> new UnsupportedOperationException(
+					"Cannot select item '" + newItem + "', because is not present in DataProvider, and adding new items is not permitted.")), fromClient);
+		}
+	}
+
+	private void addSelectedItemInternal(T newItem, boolean fromClient) {
 		List<T> value = getValue();
 		if (!value.contains(newItem)) {
 			value = new ArrayList<>(value);
@@ -340,6 +350,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 		List<T> value = new ArrayList<>(getValue());
 		if (value.remove(itemToRemove)) {
 			setModelValue(value, fromClient);
+			additionalItems.retainAll(value);
 			if (!fromClient) {
 				setPresentationValue(value);
 				fireEvent(new ChipRemovedEvent<>(this, fromClient, itemLabelGenerator.apply(itemToRemove)));
