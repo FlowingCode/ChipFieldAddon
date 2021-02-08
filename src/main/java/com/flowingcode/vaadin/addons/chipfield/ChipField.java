@@ -21,6 +21,7 @@ package com.flowingcode.vaadin.addons.chipfield;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -174,8 +175,43 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	}
 
 	@Override
+	public List<T> getValue() {
+		return new ArrayList<>(super.getValue());
+	}
+
+	@Override
 	protected void setPresentationValue(List<T> newPresentationValue) {
-		setClientChipWithoutEvent(newPresentationValue.stream().map(itemLabelGenerator).toArray(String[]::new));
+		List<String> labels = new ArrayList<>();
+
+		if (isAllowAdditionalItems()) {
+			for (T item : newPresentationValue) {
+				String label = itemLabelGenerator.apply(item);
+				if (!findItemByLabel(label).isPresent()) {
+					addSelectedItemInternal(item, false);
+					additionalItems.add(item);
+				}
+				labels.add(label);
+			}
+		} else {
+			boolean hasChanges = false;
+			newPresentationValue = new ArrayList<>(newPresentationValue);
+			Iterator<T> it = newPresentationValue.iterator();
+			while (it.hasNext()) {
+				T item = it.next();
+				String label = itemLabelGenerator.apply(item);
+				if (findItemByLabel(label).isPresent()) {
+					labels.add(label);
+				} else {
+					it.remove();
+					hasChanges = true;
+				}
+			}
+			if (hasChanges) {
+				setModelValue(newPresentationValue, false);
+			}
+		}
+
+		setClientChipWithoutEvent(labels.toArray(new String[labels.size()]));
 	}
 
 	private Optional<T> findItemByLabel(String label) {
@@ -349,8 +385,8 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 	private void removeSelectedItem(T itemToRemove, boolean fromClient) {
 		List<T> value = new ArrayList<>(getValue());
 		if (value.remove(itemToRemove)) {
-			setModelValue(value, fromClient);
 			additionalItems.retainAll(value);
+			setModelValue(value, fromClient);
 			if (!fromClient) {
 				setPresentationValue(value);
 				fireEvent(new ChipRemovedEvent<>(this, fromClient, itemLabelGenerator.apply(itemToRemove)));
