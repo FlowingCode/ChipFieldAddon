@@ -25,4 +25,24 @@ public class IntegrationView extends Div {
 		}
 	}
 
+	@ClientCallable
+	private void allowAdditionalItems(boolean value) {
+		field.setAllowAdditionalItems(value);
+	}
+
+	@ClientCallable
+	private void setFieldReadOnly(boolean value) {
+		field.setReadOnly(value);
+	}
+
+	@ClientCallable
+	private void setFieldEnabled(boolean value) {
+		field.setEnabled(value);
+	}
+
+	@ClientCallable
+	private void setValue(String... items) {
+		field.setValue(Arrays.asList(items));
+	}
+
 }
