@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.not;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -70,6 +71,11 @@ public abstract class AbstractViewTest extends ParallelTest {
 	public void setup() throws Exception {
 		setDriver(TestBench.createDriver(new ChromeDriver()));
 		getDriver().get(getURL(route));
+	}
+
+	@After
+	public void after() {
+		getDriver().close();
 	}
 
 	/**
