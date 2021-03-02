@@ -7,10 +7,12 @@ import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
 
-@Route("it")
-public class IntegrationView extends Div {
+import elemental.json.Json;
 
-	private ChipField<String> field;
+@Route("it")
+public class IntegrationView extends Div implements IntegrationViewCallables {
+
+	public ChipField<String> field;
 
 	public IntegrationView() {
 		setId("view");
@@ -18,31 +20,55 @@ public class IntegrationView extends Div {
 		field.setItems("Lorem", "Ipsum");
 	}
 
+	@Override
 	@ClientCallable
-	private void testCallable(boolean arg) {
+	public void testCallable(boolean arg) {
 		if (!arg) {
 			throw new IllegalArgumentException();
 		}
 	}
 
+	@Override
 	@ClientCallable
-	private void allowAdditionalItems(boolean value) {
+	public void allowAdditionalItems(boolean value) {
 		field.setAllowAdditionalItems(value);
 	}
 
+	@Override
 	@ClientCallable
-	private void setFieldReadOnly(boolean value) {
+	public void setFieldReadOnly(boolean value) {
 		field.setReadOnly(value);
 	}
 
+	@Override
 	@ClientCallable
-	private void setFieldEnabled(boolean value) {
+	public void setFieldEnabled(boolean value) {
 		field.setEnabled(value);
 	}
 
+	@Override
 	@ClientCallable
-	private void setValue(String... items) {
+	public void setValue(String... items) {
 		field.setValue(Arrays.asList(items));
+	}
+
+	@Override
+	@ClientCallable
+	public void useNewItemHandler(boolean useHandler) {
+		field.setNewItemHandler(useHandler ? Object::toString : null);
+	}
+
+	@ClientCallable
+	public void assertValue(String... items) {
+		if (!field.getValue().equals(Arrays.asList(items))) {
+			throw new AssertionError();
+		}
+	}
+
+	@Override
+	@ClientCallable
+	public JsonArrayList<String> getValue() {
+		return JsonArrayList.createArray(field.getValue(), Json::create);
 	}
 
 }
