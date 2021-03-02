@@ -60,6 +60,13 @@ public class ViewIT extends AbstractChipfieldTest {
 		assertThat($server.getValue(), Matchers.empty());
     }
 
+	@Test
+	public void testAdditionalItemWithNoHandler() {
+		$server.allowAdditionalItems(true);
+		chipfield.sendKeys(ADDITIONAL, Keys.ENTER);
+		assertThat(chipfield.getValue(), Matchers.empty());
+		assertThat($server.getValue(), Matchers.empty());
+	}
 
 	@Test
 	public void testAdditionalItemEnabled() {
@@ -99,5 +106,23 @@ public class ViewIT extends AbstractChipfieldTest {
 		assertThat($server.getValue(), isEqualTo(LOREM));
 	}
 
+	@Test
+	public void testSetValue() {
+		$server.setValue(LOREM);
+		assertThat(chipfield.getValue(), isEqualTo(LOREM));
+		assertThat($server.getValue(), isEqualTo(LOREM));
+
+		$server.setValue(IPSUM);
+		assertThat(chipfield.getValue(), isEqualTo(IPSUM));
+		assertThat($server.getValue(), isEqualTo(IPSUM));
+
+		$server.setValue(LOREM, IPSUM);
+		assertThat(chipfield.getValue(), isEqualTo(LOREM, IPSUM));
+		assertThat($server.getValue(), isEqualTo(LOREM, IPSUM));
+
+		$server.setValue(IPSUM, LOREM);
+		assertThat(chipfield.getValue(), isEqualTo(IPSUM, LOREM));
+		assertThat($server.getValue(), isEqualTo(IPSUM, LOREM));
+	}
 
 }
