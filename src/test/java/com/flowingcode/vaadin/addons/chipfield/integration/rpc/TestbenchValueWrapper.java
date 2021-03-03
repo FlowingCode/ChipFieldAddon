@@ -1,4 +1,4 @@
-package com.flowingcode.vaadin.addons.chipfield.integration;
+package com.flowingcode.vaadin.addons.chipfield.integration.rpc;
 
 import elemental.json.JsonType;
 import elemental.json.JsonValue;

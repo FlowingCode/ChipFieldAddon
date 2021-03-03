@@ -1,5 +1,7 @@
 package com.flowingcode.vaadin.addons.chipfield.integration;
 
+import com.flowingcode.vaadin.addons.chipfield.integration.rpc.JsonArrayList;
+
 public interface IntegrationViewCallables {
 
 	void testCallable(boolean arg);
