@@ -1,3 +1,22 @@
+/*-
+ * #%L
+ * ChipField Addon
+ * %%
+ * Copyright (C) 2018 - 2021 Flowing Code
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package com.flowingcode.vaadin.addons.chipfield.integration.rpc;
 
 import java.util.Collection;
@@ -19,6 +38,9 @@ import elemental.json.JsonValue;
 // - JsonArray cannot implement List it because the return type of get(int) is incompatible.
 // - List isn't too helpul, because most Matchers work with Iterable/Collection.
 // - JsonValue methods (JS type coercion, etc.) are not needed in integration tests.
+/**
+ * @author Javier Godoy / Flowing Code
+ */
 public interface JsonArrayList<T> extends JsonValue, Collection<T> {
 
 	List<T> asList();
