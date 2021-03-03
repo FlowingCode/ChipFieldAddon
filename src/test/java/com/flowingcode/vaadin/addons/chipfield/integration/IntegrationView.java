@@ -3,6 +3,7 @@ package com.flowingcode.vaadin.addons.chipfield.integration;
 import java.util.Arrays;
 
 import com.flowingcode.vaadin.addons.chipfield.ChipField;
+import com.flowingcode.vaadin.addons.chipfield.integration.rpc.JsonArrayList;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.Route;
