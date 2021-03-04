@@ -108,6 +108,11 @@ public class ViewIT extends AbstractChipfieldTest {
 		assertThat($server.getValue(), Matchers.empty());
 	}
 
+	/**
+	 * Test that readonly does not allow deleting chips
+	 *
+	 * @see https://github.com/FlowingCode/ChipFieldAddon/issues/34
+	 */
 	@Test
 	public void testReadOnly() {
 		chipfield.selectByText(LOREM);
@@ -125,6 +130,11 @@ public class ViewIT extends AbstractChipfieldTest {
 		assertThat($server.getValue(), isEqualTo(LOREM));
 	}
 
+	/**
+	 * Test that setValue changes both server-side and client-side values
+	 *
+	 * @see https://github.com/FlowingCode/ChipFieldAddon/issues/25
+	 */
 	@Test
 	public void testSetValue() {
 		$server.setValue(LOREM);
