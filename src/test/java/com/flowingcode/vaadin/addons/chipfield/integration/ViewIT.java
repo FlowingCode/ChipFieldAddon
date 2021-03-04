@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -169,6 +169,19 @@ public class ViewIT extends AbstractChipfieldTest {
 		$server.setValue(IPSUM, LOREM);
 		assertThat(chipfield.getValue(), isEqualTo(IPSUM, LOREM));
 		assertThat($server.getValue(), isEqualTo(IPSUM, LOREM));
+	}
+
+	/**
+	 * Test that removeSelectedItem actually removes the item.
+	 *
+	 * @see https://github.com/FlowingCode/ChipFieldAddon/issues/27
+	 */
+	@Test
+	public void testRemoveSelectedItem() {
+		$server.setValue(LOREM, IPSUM);
+		$server.removeSelectedItem(LOREM);
+		assertThat(chipfield.getValue(), isEqualTo(IPSUM));
+		assertThat($server.getValue(), isEqualTo(IPSUM));
 	}
 
 }
