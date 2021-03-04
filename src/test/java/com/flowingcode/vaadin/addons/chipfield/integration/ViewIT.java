@@ -61,11 +61,15 @@ public class ViewIT extends AbstractChipfieldTest {
 	}
 
 	@Test
-	public void testSelectByText() {
+	public void testSelectOneByText() {
 		chipfield.selectByText(LOREM);
 		assertThat(chipfield.getValue(), isEqualTo(LOREM));
 		assertThat($server.getValue(), isEqualTo(LOREM));
+	}
 
+	@Test
+	public void testSelectTwoByText() {
+		chipfield.selectByText(LOREM);
 		chipfield.selectByText(IPSUM);
 		assertThat(chipfield.getValue(), isEqualTo(LOREM, IPSUM));
 		assertThat($server.getValue(), isEqualTo(LOREM, IPSUM));
@@ -78,6 +82,19 @@ public class ViewIT extends AbstractChipfieldTest {
 		assertThat(chipfield.getValue(), Matchers.empty());
 		assertThat($server.getValue(), Matchers.empty());
     }
+
+	@Test
+	public void testBackspace() {
+		$server.setValue(LOREM, IPSUM);
+
+		chipfield.sendKeys(Keys.BACK_SPACE);
+		assertThat(chipfield.getValue(), isEqualTo(LOREM));
+		assertThat($server.getValue(), isEqualTo(LOREM));
+
+		chipfield.sendKeys(Keys.BACK_SPACE);
+		assertThat(chipfield.getValue(), Matchers.empty());
+		assertThat($server.getValue(), Matchers.empty());
+	}
 
 	@Test
 	public void testAdditionalItemWithNoHandler() {
