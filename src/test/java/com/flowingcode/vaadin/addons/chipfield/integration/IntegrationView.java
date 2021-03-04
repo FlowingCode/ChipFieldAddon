@@ -19,7 +19,9 @@
  */
 package com.flowingcode.vaadin.addons.chipfield.integration;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Optional;
 
 import com.flowingcode.vaadin.addons.chipfield.ChipField;
 import com.flowingcode.vaadin.addons.chipfield.integration.rpc.JsonArrayList;
@@ -95,6 +97,18 @@ public class IntegrationView extends Div implements IntegrationViewCallables {
 	@ClientCallable
 	public JsonArrayList<String> getValue() {
 		return JsonArrayList.createArray(field.getValue(), Json::create);
+	}
+
+	@Override
+	@ClientCallable
+	public boolean hasItemWithLabel(String label) {
+		try {
+			Method method = ChipField.class.getDeclaredMethod("findItemByLabel", String.class);
+			method.setAccessible(true);
+			return ((Optional<?>) method.invoke(field, label)).isPresent();
+		} catch (Exception e) {
+			throw new RuntimeException();
+		}
 	}
 
 }
