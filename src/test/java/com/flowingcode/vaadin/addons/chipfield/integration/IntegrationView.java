@@ -21,6 +21,7 @@ package com.flowingcode.vaadin.addons.chipfield.integration;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import com.flowingcode.vaadin.addons.chipfield.ChipField;
@@ -35,6 +36,7 @@ import elemental.json.Json;
 public class IntegrationView extends Div implements IntegrationViewCallables {
 
 	public ChipField<String> field;
+	private List<String> lastValueChange;
 
 	public IntegrationView() {
 		setId("view");
@@ -109,6 +111,20 @@ public class IntegrationView extends Div implements IntegrationViewCallables {
 		} catch (Exception e) {
 			throw new RuntimeException();
 		}
+	}
+
+	@Override
+	@ClientCallable
+	public void addValueChangeListener() {
+		field.addValueChangeListener(ev -> {
+			lastValueChange = ev.getValue();
+		});
+	}
+
+	@Override
+	@ClientCallable
+	public JsonArrayList<String> getLastValueChange() {
+		return JsonArrayList.fromStringArray(lastValueChange);
 	}
 
 }

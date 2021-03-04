@@ -186,9 +186,44 @@ public class ViewIT extends AbstractChipfieldTest {
 	}
 
 	/**
-	 * Test that findItemByLabel returns the additional chip
+	 * Test that valueChangeListener detects when adding a or removing a chip programatically.
 	 *
-	 * @see https://github.com/FlowingCode/ChipFieldAddon/issues/35
+	 * @see https://github.com/FlowingCode/ChipFieldAddon/issues/32
+	 */
+	@Test
+	public void testValueChangeEventOnSetValue() {
+		$server.addValueChangeListener();
+		$server.allowAdditionalItems(true);
+		$server.useNewItemHandler(true);
+		$server.setValue(LOREM, ADDITIONAL);
+		assertThat($server.getLastValueChange(), isEqualTo(LOREM, ADDITIONAL));
+		$server.setValue(LOREM);
+		assertThat($server.getLastValueChange(), isEqualTo(LOREM));
+	}
+
+	/**
+	 * Test that valueChangeListener catch the event when adding or removing an additional chip from the UI.
+	 *
+	 * @throws InterruptedException
+	 *
+	 * @see https://github.com/FlowingCode/ChipFieldAddon/issues/32
+	 */
+	@Test
+	public void testValueChangeEventOnAdditionalItem() throws InterruptedException {
+		$server.allowAdditionalItems(true);
+		$server.useNewItemHandler(true);
+		$server.addValueChangeListener();
+		$server.setValue(LOREM);
+		chipfield.sendKeys(ADDITIONAL, Keys.ENTER);
+		assertThat($server.getLastValueChange(), isEqualTo(LOREM, ADDITIONAL));
+		chipfield.sendKeys(Keys.BACK_SPACE);
+		assertThat($server.getLastValueChange(), isEqualTo(LOREM));
+	}
+
+	/**
+	 * Test that findItemByLabel returns the additional chips https://github.com/FlowingCode/ChipFieldAddon/issues/35
+	 *
+	 * @see https://github.com/FlowingCode/ChipFieldAddon/issues/36
 	 */
 	@Test
 	public void testFindItemByLabel() {
