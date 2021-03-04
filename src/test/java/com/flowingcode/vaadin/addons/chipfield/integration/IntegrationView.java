@@ -55,6 +55,12 @@ public class IntegrationView extends Div implements IntegrationViewCallables {
 	}
 
 	@Override
+	@ClientCallable	
+	public void removeSelectedItem(String itemToRemove) {
+		field.removeSelectedItem(itemToRemove);
+	}
+
+	@Override
 	@ClientCallable
 	public void setFieldReadOnly(boolean value) {
 		field.setReadOnly(value);

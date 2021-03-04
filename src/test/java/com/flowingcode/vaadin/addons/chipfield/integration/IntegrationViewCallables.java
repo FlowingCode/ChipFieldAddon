@@ -37,4 +37,6 @@ public interface IntegrationViewCallables {
 
 	JsonArrayList<String> getValue();
 
+	void removeSelectedItem(String itemToRemove);
+
 }
