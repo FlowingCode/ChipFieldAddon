@@ -21,6 +21,7 @@ package com.flowingcode.vaadin.addons.chipfield.integration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -184,4 +185,15 @@ public class ViewIT extends AbstractChipfieldTest {
 		assertThat($server.getValue(), isEqualTo(IPSUM));
 	}
 
+	/**
+	 * Test that findItemByLabel returns the additional chip
+	 *
+	 * @see https://github.com/FlowingCode/ChipFieldAddon/issues/35
+	 */
+	@Test
+	public void testFindItemByLabel() {
+		$server.useNewItemHandler(true);
+		chipfield.sendKeys(ADDITIONAL, Keys.ENTER);
+		assertTrue("Additional item was not returned by findItemByLabel", $server.hasItemWithLabel(ADDITIONAL));
+	}
 }

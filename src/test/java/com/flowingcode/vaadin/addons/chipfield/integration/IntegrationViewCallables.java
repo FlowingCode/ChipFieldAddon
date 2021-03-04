@@ -39,4 +39,6 @@ public interface IntegrationViewCallables {
 
 	void removeSelectedItem(String itemToRemove);
 
+	boolean hasItemWithLabel(String label);
+
 }
