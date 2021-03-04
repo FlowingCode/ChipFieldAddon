@@ -29,6 +29,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -84,16 +85,23 @@ public interface HasRpcSupport extends HasDriver {
 			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 				Object result = call(method.getName(), args);
 
-				if (result == null || method.getReturnType() == Void.TYPE) {
+				Class<?> returnType = method.getReturnType();
+				if (result == null || returnType == Void.TYPE) {
 					return null;
 				}
 
-				if (method.getReturnType() == JsonArrayList.class) {
+				if (returnType == JsonArrayList.class) {
 					return JsonArrayList.wrapForTestbench((List<?>) result);
 				}
 
-				// this implementation is incomplete.
-				// other types that should be supported are: Double, Integer, Boolean, String, JsonValue
+				if (returnType.isPrimitive()) {
+					returnType = ClassUtils.primitiveToWrapper(method.getReturnType());
+				}
+
+				if (returnType.isInstance(result)) {
+					return result;
+				}
+
 				throw new ClassCastException(String.format("%s as %s", result.getClass().getName(), method.getReturnType().getName()));
 			}
 		}));
