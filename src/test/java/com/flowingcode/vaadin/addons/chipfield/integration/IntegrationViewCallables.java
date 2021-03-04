@@ -25,6 +25,10 @@ public interface IntegrationViewCallables {
 
 	void testCallable(boolean arg);
 
+	void addValueChangeListener();
+
+	JsonArrayList<String> getLastValueChange();
+
 	void allowAdditionalItems(boolean value);
 
 	void setFieldReadOnly(boolean value);
