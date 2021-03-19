@@ -22,15 +22,16 @@ package com.flowingcode.vaadin.addons.chipfield.integration;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.openqa.selenium.Keys;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ViewIT extends AbstractChipfieldTest {
 
 	private static final String LOREM = "Lorem";
@@ -126,6 +127,81 @@ public class ViewIT extends AbstractChipfieldTest {
 		assertThat($server.getValue(), Matchers.empty());
 	}
 
+  @Test
+  public void testItemCreatedListenerFromClient() {
+    $server.addItemCreatedListener();
+
+    chipfield.selectByText(LOREM);
+    assertThat($server.getLastCreatedItem(), Matchers.is(LOREM));
+  }
+
+  @Test
+  public void testItemCreatedListenerFromServer() {
+    $server.addItemCreatedListener();
+
+    $server.setValue(IPSUM);
+    assertThat($server.getLastCreatedItem(), Matchers.is(IPSUM));
+  }
+
+  @Test
+  public void testAdditionalItemCreatedListenerFromClient() {
+    $server.allowAdditionalItems(true);
+    $server.useNewItemHandler(true);
+    $server.addItemCreatedListener();
+
+    chipfield.sendKeys(ADDITIONAL, Keys.ENTER);
+    assertThat($server.getLastCreatedItem(), Matchers.is(ADDITIONAL));
+  }
+
+  @Test
+  public void testAdditionalItemCreatedListenerFromServer() {
+    $server.allowAdditionalItems(true);
+    $server.useNewItemHandler(true);
+    $server.addItemCreatedListener();
+
+    $server.setValue(ADDITIONAL);
+    assertThat($server.getLastCreatedItem(), Matchers.is(ADDITIONAL));
+  }
+
+  @Test
+  public void testItemRemovedListenerFromClient() {
+    $server.addItemRemovedListener();
+
+    $server.setValue(LOREM);
+    chipfield.sendKeys(Keys.BACK_SPACE);
+    assertThat($server.getLastRemovedItem(), Matchers.is(LOREM));
+  }
+
+  @Test
+  public void testItemRemovedListenerFromServer() {
+    $server.addItemRemovedListener();
+
+    $server.setValue(LOREM);
+    $server.setValue();
+    assertThat($server.getLastRemovedItem(), Matchers.is(LOREM));
+  }
+
+  @Test
+  public void testAdditionalItemRemovedListenerFromClient() {
+    $server.allowAdditionalItems(true);
+    $server.useNewItemHandler(true);
+    $server.addItemRemovedListener();
+
+    $server.setValue(ADDITIONAL);
+    chipfield.sendKeys(Keys.BACK_SPACE);
+    assertThat($server.getLastRemovedItem(), Matchers.is(ADDITIONAL));
+  }
+
+  @Test
+  public void testAdditionalItemRemovedListenerFromServer() {
+    $server.allowAdditionalItems(true);
+    $server.useNewItemHandler(true);
+    $server.addItemRemovedListener();
+
+    $server.setValue(ADDITIONAL);
+    $server.setValue();
+    assertThat($server.getLastRemovedItem(), Matchers.is(ADDITIONAL));
+  }
 	/**
 	 * Test that readonly does not allow deleting chips
 	 *
@@ -170,6 +246,11 @@ public class ViewIT extends AbstractChipfieldTest {
 		$server.setValue(IPSUM, LOREM);
 		assertThat(chipfield.getValue(), isEqualTo(IPSUM, LOREM));
 		assertThat($server.getValue(), isEqualTo(IPSUM, LOREM));
+
+        $server.allowAdditionalItems(true);
+        $server.setValue(ADDITIONAL);
+        assertThat(chipfield.getValue(), isEqualTo(ADDITIONAL));
+        assertThat($server.getValue(), isEqualTo(ADDITIONAL));
 	}
 
 	/**
