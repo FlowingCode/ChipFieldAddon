@@ -23,44 +23,43 @@ import com.flowingcode.vaadin.addons.chipfield.integration.rpc.JsonArrayList;
 
 public interface IntegrationViewCallables {
 
-	void testCallable(boolean arg);
+  void testCallable(boolean arg);
 
-	void addValueChangeListener();
+  void addValueChangeListener();
 
-	void addItemRemovedListener();
+  void addItemRemovedListener();
 
-	void addItemClickedListener();
+  void addItemClickedListener();
 
-	void addItemCreatedListener();
+  void addItemCreatedListener();
 
-	JsonArrayList<String> getLastValueChange();
+  JsonArrayList<String> getLastValueChange();
 
-	String getLastClickedItem();
+  String getLastClickedItem();
 
-	String getLastRemovedItem();
+  String getLastRemovedItem();
 
-	String getLastCreatedItem();
+  String getLastCreatedItem();
 
-	void allowAdditionalItems(boolean value);
+  void allowAdditionalItems(boolean value);
 
-	void setFieldReadOnly(boolean value);
+  void setFieldReadOnly(boolean value);
 
-	void setFieldEnabled(boolean value);
+  void setFieldEnabled(boolean value);
 
-	void setValue(String... items);
+  void setValue(String... items);
 
-	void useNewItemHandler(boolean useHandler);
+  void useNewItemHandler(boolean useHandler);
 
-	JsonArrayList<String> getValue();
+  JsonArrayList<String> getValue();
 
-	void setClosable(boolean closable);
+  void setClosable(boolean closable);
 
-	boolean isClosable();
+  boolean isClosable();
 
-	void setAllowedPattern(String pattern);
+  void setAllowedPattern(String pattern);
 
-	void removeSelectedItem(String itemToRemove);
+  void removeSelectedItem(String itemToRemove);
 
-	boolean hasItemWithLabel(String label);
-
+  boolean hasItemWithLabel(String label);
 }
