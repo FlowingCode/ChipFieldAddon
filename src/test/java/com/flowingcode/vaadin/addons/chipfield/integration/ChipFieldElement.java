@@ -40,4 +40,10 @@ public class ChipFieldElement extends TestBenchElement {
   public void selectByText(String label) {
     sendKeys(label, Keys.ARROW_DOWN, Keys.ENTER);
   }
+
+  public void click(int index) {
+    TestBenchElement chip = $("paper-chip").get(index);
+    executeScript("arguments[0].root.querySelector('.chip').click()", chip);
+  }
+
 }

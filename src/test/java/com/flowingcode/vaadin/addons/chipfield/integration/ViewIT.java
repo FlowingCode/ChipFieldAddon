@@ -22,7 +22,6 @@ package com.flowingcode.vaadin.addons.chipfield.integration;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.Collection;
 import org.hamcrest.Matcher;
@@ -203,6 +202,27 @@ public class ViewIT extends AbstractChipfieldTest {
     $server.setValue();
     assertThat($server.getLastRemovedItem(), Matchers.is(ADDITIONAL));
   }
+
+  @Test
+  public void testItemClickedListener() {
+    $server.addItemClickedListener();
+
+    $server.setValue(LOREM);
+    chipfield.click(0);
+    assertThat($server.getLastClickedItem(), Matchers.is(LOREM));
+  }
+
+  @Test
+  public void testAdditionalItemClickedListener() {
+    $server.allowAdditionalItems(true);
+    $server.useNewItemHandler(true);
+    $server.addItemClickedListener();
+
+    $server.setValue(ADDITIONAL);
+    chipfield.click(0);
+    assertThat($server.getLastClickedItem(), Matchers.is(ADDITIONAL));
+  }
+
   /**
    * Test that readonly does not allow deleting chips
    *
