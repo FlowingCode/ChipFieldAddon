@@ -19,45 +19,52 @@
  */
 package com.flowingcode.vaadin.addons.chipfield;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class BinderDemo extends VerticalLayout {
 
-	public BinderDemo() {
+  public BinderDemo() {
 
-		Planet p = new Planet("A new planet");
+    Planet p = new Planet("A new planet");
 
-		ChipField<String> chf = new ChipField<>("Choose planet features (try with: 'Rings', 'Moons', 'Water', etc.)");
-		chf.setWidthFull();
+    ChipField<String> chf =
+        new ChipField<>("Choose planet features (try with: 'Rings', 'Moons', 'Water', etc.)");
+    chf.setWidthFull();
 
-		List<String> items = Arrays.asList("Rings", "Moons", "Water", "Rocks", "Lava", "Ice", "Cold", "Heat", "Atmosphere");
-		chf.setItems(items);
+    List<String> items =
+        Arrays.asList(
+            "Rings", "Moons", "Water", "Rocks", "Lava", "Ice", "Cold", "Heat", "Atmosphere");
+    chf.setItems(items);
 
-		Binder<Planet> binder = new Binder<>();
-		binder.bind(chf, Planet::getFeatures, Planet::setFeatures);
-		binder.setBean(p);
+    Binder<Planet> binder = new Binder<>();
+    binder.bind(chf, Planet::getFeatures, Planet::setFeatures);
+    binder.setBean(p);
 
-		chf.addValueChangeListener(
-				newItem -> Notification.show("Current value: " + newItem.getValue(), 5000, Position.BOTTOM_START));
+    chf.addValueChangeListener(
+        newItem ->
+            Notification.show("Current value: " + newItem.getValue(), 5000, Position.BOTTOM_START));
 
-		add(chf);
-		add(new Button("Show planet features",
-				e -> Notification.show("Features: " + p.getFeatures(), 5000, Position.BOTTOM_START)));
+    add(chf);
+    add(
+        new Button(
+            "Show planet features",
+            e -> Notification.show("Features: " + p.getFeatures(), 5000, Position.BOTTOM_START)));
 
-		add(new Button("Random features", ev -> {
-			p.setFeatures(items.stream().filter(x -> Math.random() > 0.7).collect(Collectors.toList()));
-			binder.setBean(p);
-		}));
-
-	}
-
+    add(
+        new Button(
+            "Random features",
+            ev -> {
+              p.setFeatures(
+                  items.stream().filter(x -> Math.random() > 0.7).collect(Collectors.toList()));
+              binder.setBean(p);
+            }));
+  }
 }
