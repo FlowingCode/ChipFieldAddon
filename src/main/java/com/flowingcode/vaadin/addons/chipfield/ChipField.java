@@ -76,10 +76,14 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
     private final String chipLabel;
     private final T item;
 
-    public ChipEvent(ChipField<T> source, boolean fromClient, String chipLabel) {
+    private ChipEvent(ChipField<T> source, boolean fromClient, T item, String chipLabel) {
       super(source, fromClient);
       this.chipLabel = chipLabel;
-      this.item = source.findItemByLabel(chipLabel).orElse(null);
+      this.item = item;
+    }
+
+    public ChipEvent(ChipField<T> source, boolean fromClient, String chipLabel) {
+      this(source, fromClient, source.findItemByLabel(chipLabel).orElse(null), chipLabel);
     }
 
     public String getChipLabel() {
@@ -91,19 +95,16 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
     }
   }
 
-  @DomEvent("chip-removed")
   public static class ChipRemovedEvent<T> extends ChipEvent<T> {
-    public ChipRemovedEvent(
-        ChipField<T> source, boolean fromClient, @EventData(CHIP_LABEL) String chipLabel) {
-      super(source, fromClient, chipLabel);
+    public ChipRemovedEvent(ChipField<T> source, boolean fromClient, T item) {
+      super(source, fromClient, item, source.itemLabelGenerator.apply(item));
     }
   }
 
-  @DomEvent("chip-created")
   public static class ChipCreatedEvent<T> extends ChipEvent<T> {
     public ChipCreatedEvent(
-        ChipField<T> source, boolean fromClient, @EventData(CHIP_LABEL) String chipLabel) {
-      super(source, fromClient, chipLabel);
+        ChipField<T> source, boolean fromClient, T item) {
+      super(source, fromClient, item, source.itemLabelGenerator.apply(item));
     }
   }
 
@@ -121,6 +122,20 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
     setChipLabelGenerator(itemLabelGenerator);
     setLabel(label);
     this.availableItems = DataProvider.ofCollection(Arrays.asList(availableItems));
+
+    addValueChangeListener(ev -> {
+      for (T t : ev.getOldValue()) {
+        if (!ev.getValue().contains(t)) {
+          fireEvent(new ChipRemovedEvent<>(this, ev.isFromClient(), t));
+        }
+      }
+
+      for (T t : ev.getValue()) {
+        if (!ev.getOldValue().contains(t)) {
+          fireEvent(new ChipCreatedEvent<>(this, ev.isFromClient(), t));
+        }
+      }
+    });
   }
 
   @SafeVarargs
@@ -396,7 +411,6 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
       setModelValue(value, fromClient);
       if (!fromClient) {
         setPresentationValue(value);
-        fireEvent(new ChipCreatedEvent<>(this, fromClient, itemLabelGenerator.apply(newItem)));
       }
     }
   }
@@ -412,7 +426,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
       setModelValue(value, fromClient);
       if (!fromClient) {
         setPresentationValue(value);
-        fireEvent(new ChipRemovedEvent<>(this, fromClient, itemLabelGenerator.apply(itemToRemove)));
+
       }
     }
   }
@@ -421,4 +435,5 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
   public Registration addChipClickedListener(ComponentEventListener<ChipClickedEvent<T>> listener) {
     return addListener(ChipClickedEvent.class, (ComponentEventListener) listener);
   }
+
 }
