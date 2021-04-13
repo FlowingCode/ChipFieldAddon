@@ -157,11 +157,13 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
                           () -> {
                             if (isAllowAdditionalItems()) {
                               if (newItemHandler == null) {
+                                setPresentationValue(getValue());
                                 throw new IllegalStateException(
                                     "You need to setup a NewItemHandler");
                               }
                               return this.newItemHandler.apply(chipLabel);
                             } else {
+                              setPresentationValue(getValue());
                               throw new IllegalStateException(
                                   "Adding new items is not allowed, but still receiving new items (not present in DataProvider) from client-side. Probably wrong configuration.");
                             }
