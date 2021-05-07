@@ -26,5 +26,4 @@ public abstract class AbstractRemoveAndReAddTest extends AbstractViewTest implem
   protected AbstractRemoveAndReAddTest() {
     super("remove-add-test");
   }
-
 }
