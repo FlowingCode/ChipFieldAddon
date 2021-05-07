@@ -201,6 +201,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
   @Override
   protected void onAttach(AttachEvent attachEvent) {
     configure();
+    setPresentationValue(getValue());
   }
 
   @Override
