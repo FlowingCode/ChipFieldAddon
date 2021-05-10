@@ -32,7 +32,11 @@ import org.junit.Test;
  *
  * @see https://github.com/FlowingCode/ChipFieldAddon/issues/33
  */
-public class RemoveAndReAddTestIT extends AbstractRemoveAndReAddTest {
+public class RemoveAndReAddTestIT extends AbstractViewTest {
+
+  public RemoveAndReAddTestIT() {
+    super("remove-add-test");
+  }
 
   @Test
   public void toggleChipField() {
