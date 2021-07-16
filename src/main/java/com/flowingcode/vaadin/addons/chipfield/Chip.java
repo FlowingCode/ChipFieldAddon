@@ -21,7 +21,7 @@ package com.flowingcode.vaadin.addons.chipfield;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
@@ -38,7 +38,7 @@ import com.vaadin.flow.component.icon.Icon;
 @NpmPackage(value = "@polymer/paper-material", version = "^3.0.1")
 @NpmPackage(value = "@polymer/paper-ripple", version = "^3.0.1")
 @NpmPackage(value = "@polymer/paper-styles", version = "^3.0.1")
-@JavaScript("./paper-chip.js")
+@JsModule("./paper-chip.js")
 public class Chip extends Component {
 
   public static final String CHIP_LABEL = "event.detail.chipLabel";
