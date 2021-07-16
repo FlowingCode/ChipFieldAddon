@@ -29,7 +29,7 @@ import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.data.binder.HasDataProvider;
 import com.vaadin.flow.data.binder.HasItemsAndComponents;
@@ -60,7 +60,7 @@ import java.util.stream.Stream;
 @NpmPackage(value = "@polymer/paper-material", version = "^3.0.1")
 @NpmPackage(value = "@polymer/paper-ripple", version = "^3.0.1")
 @NpmPackage(value = "@polymer/paper-styles", version = "^3.0.1")
-@JavaScript("./paper-chip-input-autocomplete.js")
+@JsModule("./paper-chip-input-autocomplete.js")
 public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
     implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
 
