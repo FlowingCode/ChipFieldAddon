@@ -25,6 +25,7 @@ Custom property | Description | Default
 */
 import '@polymer/polymer/polymer-legacy.js';
 
+import './skip-loading-font-roboto.js';
 import '@polymer/iron-a11y-keys/iron-a11y-keys.js';
 import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/paper-input/paper-input.js';
