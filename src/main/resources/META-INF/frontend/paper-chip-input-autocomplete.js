@@ -287,7 +287,7 @@ class PaperChipInputAutocomplete extends PolymerElement {
                                     [[item.name]]
                                     <paper-chip id="paper-chip-[[item]]-[[index]]"
                                                 label="[[item]]"
-                                                closable$="[[closable]]"
+                                                closable="[[_isClosable(closable,readonly)]]"
                                                 on-chip-removed="_removeChip">
                                     </paper-chip>
                                 </template>
@@ -318,6 +318,7 @@ class PaperChipInputAutocomplete extends PolymerElement {
 				this._autoValidate = this.autoValidate;
 				this._required = this.required;
 				this._paperInputElement = this.$.paperInput;
+                this.toggleReadonly();
     }
 
     _isEmpty(item) {
@@ -455,6 +456,18 @@ class PaperChipInputAutocomplete extends PolymerElement {
             composed: true,
             bubbles: true
 				}));
+    }
+
+    _isClosable(closable, readonly) { 
+        return closable && !readonly; 
+    } 
+
+    toggleReadonly() {
+    	if(this.readonly){            
+            this.$.paperInput.style.pointerEvents="none";         
+        } else {
+            this.$.paperInput.style.removeProperty("pointer-events");
+        }
     }
 
 }

@@ -306,6 +306,12 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
     return this.isReadonly();
   }
 
+  @Override
+  public void setReadOnly(boolean readOnly) {
+    super.setReadOnly(readOnly);
+    getElement().callJsFunction("toggleReadonly");
+  }
+
   /** @deprecated use {@link #setRequiredIndicatorVisible(boolean)} */
   @Deprecated
   public void setRequired(boolean required) {
