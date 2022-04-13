@@ -39,8 +39,9 @@ import '@polymer/paper-ripple/paper-ripple.js';
 import '@polymer/paper-styles/default-theme.js';
 import './paper-chip-input.js';
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
+import { ThemableMixin } from '@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js';
 
-class PaperChipInputAutocomplete extends PolymerElement {
+class PaperChipInputAutocomplete extends ThemableMixin(PolymerElement) {
 
     static get is() {
 				return 'paper-chip-input-autocomplete';
@@ -280,7 +281,8 @@ class PaperChipInputAutocomplete extends PolymerElement {
                         pattern="[[pattern]]"
                         required$="[[required]]"
                         auto-validate$="[[autoValidate]]"
-                        error-message="[[errorMessage]]">
+                        error-message="[[errorMessage]]"
+        				theme$="[[theme]]">
                         <div id="slot2" slot="prefix">
                             <dom-repeat items="[[items]]">
                                 <template>
@@ -288,7 +290,8 @@ class PaperChipInputAutocomplete extends PolymerElement {
                                     <paper-chip id="paper-chip-[[item]]-[[index]]"
                                                 label="[[item]]"
                                                 closable="[[_isClosable(closable,readonly)]]"
-                                                on-chip-removed="_removeChip">
+                                                on-chip-removed="_removeChip"
+        										theme$="[[theme]]">
                                     </paper-chip>
                                 </template>
                             </dom-repeat>
@@ -310,7 +313,7 @@ class PaperChipInputAutocomplete extends PolymerElement {
                     </paper-listbox>
                 </paper-material>
             </template>
-        </dom-if>`
+        </dom-if>`;
     }
 
     connectedCallback() {

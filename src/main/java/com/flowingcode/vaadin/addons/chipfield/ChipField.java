@@ -19,6 +19,13 @@
  */
 package com.flowingcode.vaadin.addons.chipfield;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ComponentEvent;
@@ -27,6 +34,7 @@ import com.vaadin.flow.component.DomEvent;
 import com.vaadin.flow.component.EventData;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.HasTheme;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -40,13 +48,6 @@ import com.vaadin.flow.shared.Registration;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import elemental.json.impl.JreJsonFactory;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 @SuppressWarnings("serial")
 @Tag("paper-chip-input-autocomplete")
@@ -62,7 +63,7 @@ import java.util.stream.Stream;
 @NpmPackage(value = "@polymer/paper-styles", version = "^3.0.1")
 @JsModule("./paper-chip-input-autocomplete.js")
 public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
-    implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize {
+    implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize, HasTheme {
 
   public static final String CHIP_LABEL = "event.detail.chipLabel";
 

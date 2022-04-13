@@ -20,6 +20,8 @@
 package com.flowingcode.vaadin.addons.chipfield;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.HasTheme;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
@@ -39,7 +41,7 @@ import com.vaadin.flow.component.icon.Icon;
 @NpmPackage(value = "@polymer/paper-ripple", version = "^3.0.1")
 @NpmPackage(value = "@polymer/paper-styles", version = "^3.0.1")
 @JsModule("./paper-chip.js")
-public class Chip extends Component {
+public class Chip extends Component implements HasTheme, HasStyle {
 
   public static final String CHIP_LABEL = "event.detail.chipLabel";
   private String label;
@@ -49,7 +51,7 @@ public class Chip extends Component {
   public Chip(String label, boolean closable, Icon icon) {
     this.setLabel(label);
     this.setClosable(closable);
-    this.setIcon(icon);
+    this.setIcon(icon); 
   }
 
   public Chip(String chipText) {
