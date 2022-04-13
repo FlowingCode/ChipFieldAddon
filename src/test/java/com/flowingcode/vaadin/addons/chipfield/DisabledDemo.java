@@ -19,8 +19,12 @@
  */
 package com.flowingcode.vaadin.addons.chipfield;
 
+import com.flowingcode.vaadin.addons.demo.DemoSource;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.PageTitle;
 
+@PageTitle("Disabled")
+@DemoSource
 @SuppressWarnings("serial")
 public class DisabledDemo extends VerticalLayout {
   public DisabledDemo() {
