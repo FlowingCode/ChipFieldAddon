@@ -1,0 +1,25 @@
+:host([theme~="styled-demo"]) {
+	border: 1px solid #c1c1c1;
+    border-radius: 0.5em;
+    padding-left: 10px;
+    padding-bottom: 10px;
+}
+
+:host([theme~="styled-demo"]) paper-input {
+	
+	/* disable underline*/
+	--paper-input-container-underline: {
+	  	display: none;
+	};
+	   
+	/* disable on focus*/
+	--paper-input-container-underline-focus: {
+	  display: none;
+	};
+	
+	/* disable on input-disable*/
+	--paper-input-container-underline-disabled: {
+	  display: none;
+	};
+    
+}

@@ -36,6 +36,7 @@ public class ChipfieldDemoView extends TabbedDemo {
   private static final String DISABLED_DEMO = "Disabled";
   private static final String BINDER_DEMO = "Binder";
   private static final String READONLY_DEMO = "Readonly";
+  private static final String STYLED_DEMO = "Styled";
   private static final String DATAPROVIDER_SOURCE =
       "https://github.com/FlowingCode/ChipFieldAddon/blob/master/src/test/java/com/flowingcode/vaadin/addons/chipfield/DataProviderDemo.java";
   private static final String RESTRICTED_SOURCE =
@@ -46,6 +47,8 @@ public class ChipfieldDemoView extends TabbedDemo {
       "https://github.com/FlowingCode/ChipFieldAddon/blob/master/src/test/java/com/flowingcode/vaadin/addons/chipfield/BinderDemo.java";
   private static final String READONLY_SOURCE =
       "https://github.com/FlowingCode/ChipFieldAddon/blob/master/src/test/java/com/flowingcode/vaadin/addons/chipfield/ReadonlyDemo.java";
+  private static final String STYLED_SOURCE =
+      "https://github.com/FlowingCode/ChipFieldAddon/blob/master/src/test/java/com/flowingcode/vaadin/addons/chipfield/StyledDemo.java";
 
   public ChipfieldDemoView() {
 
@@ -54,5 +57,6 @@ public class ChipfieldDemoView extends TabbedDemo {
     addDemo(new DisabledDemo(), DISABLED_DEMO, DISABLED_SOURCE);
     addDemo(new BinderDemo(), BINDER_DEMO, BINDER_SOURCE);
     addDemo(new ReadonlyDemo(), READONLY_DEMO, READONLY_SOURCE);
+    addDemo(new StyledDemo(), STYLED_DEMO, STYLED_SOURCE);
   }
 }
