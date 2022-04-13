@@ -19,9 +19,13 @@
  */
 package com.flowingcode.vaadin.addons.chipfield;
 
+import com.flowingcode.vaadin.addons.demo.DemoSource;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.PageTitle;
 import java.util.Arrays;
 
+@PageTitle("Restricted")
+@DemoSource
 @SuppressWarnings("serial")
 public class RestrictedDemo extends VerticalLayout {
   public RestrictedDemo() {

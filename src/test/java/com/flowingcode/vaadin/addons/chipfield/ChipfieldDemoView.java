@@ -31,32 +31,12 @@ import com.vaadin.flow.router.Route;
 @GithubLink("https://github.com/FlowingCode/ChipFieldAddon")
 public class ChipfieldDemoView extends TabbedDemo {
 
-  private static final String DATAPROVIDER_DEMO = "Data Provider";
-  private static final String RESTRICTED_DEMO = "Restricted";
-  private static final String DISABLED_DEMO = "Disabled";
-  private static final String BINDER_DEMO = "Binder";
-  private static final String READONLY_DEMO = "Readonly";
-  private static final String STYLED_DEMO = "Styled";
-  private static final String DATAPROVIDER_SOURCE =
-      "https://github.com/FlowingCode/ChipFieldAddon/blob/master/src/test/java/com/flowingcode/vaadin/addons/chipfield/DataProviderDemo.java";
-  private static final String RESTRICTED_SOURCE =
-      "https://github.com/FlowingCode/ChipFieldAddon/blob/master/src/test/java/com/flowingcode/vaadin/addons/chipfield/RestrictedDemo.java";
-  private static final String DISABLED_SOURCE =
-      "https://github.com/FlowingCode/ChipFieldAddon/blob/master/src/test/java/com/flowingcode/vaadin/addons/chipfield/DisabledDemo.java";
-  private static final String BINDER_SOURCE =
-      "https://github.com/FlowingCode/ChipFieldAddon/blob/master/src/test/java/com/flowingcode/vaadin/addons/chipfield/BinderDemo.java";
-  private static final String READONLY_SOURCE =
-      "https://github.com/FlowingCode/ChipFieldAddon/blob/master/src/test/java/com/flowingcode/vaadin/addons/chipfield/ReadonlyDemo.java";
-  private static final String STYLED_SOURCE =
-      "https://github.com/FlowingCode/ChipFieldAddon/blob/master/src/test/java/com/flowingcode/vaadin/addons/chipfield/StyledDemo.java";
-
-  public ChipfieldDemoView() {
-
-    addDemo(new DataProviderDemo(), DATAPROVIDER_DEMO, DATAPROVIDER_SOURCE);
-    addDemo(new RestrictedDemo(), RESTRICTED_DEMO, RESTRICTED_SOURCE);
-    addDemo(new DisabledDemo(), DISABLED_DEMO, DISABLED_SOURCE);
-    addDemo(new BinderDemo(), BINDER_DEMO, BINDER_SOURCE);
-    addDemo(new ReadonlyDemo(), READONLY_DEMO, READONLY_SOURCE);
-    addDemo(new StyledDemo(), STYLED_DEMO, STYLED_SOURCE);
+   public ChipfieldDemoView() {
+    addDemo(new DataProviderDemo());
+    addDemo(new RestrictedDemo());
+    addDemo(new DisabledDemo());
+    addDemo(new BinderDemo());
+    addDemo(new ReadonlyDemo());
+    addDemo(new StyledDemo());
   }
 }

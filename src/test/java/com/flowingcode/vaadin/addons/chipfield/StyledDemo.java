@@ -20,9 +20,13 @@
 package com.flowingcode.vaadin.addons.chipfield;
 
 import java.util.Arrays;
+import com.flowingcode.vaadin.addons.demo.DemoSource;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.PageTitle;
 
+@PageTitle("Styled")
+@DemoSource
 @CssImport(value = "./styles/paper-chip-styles.css", themeFor = "paper-chip")
 @CssImport(value = "./styles/paper-chip-input-autocomplete-styles.css", themeFor = "paper-chip-input-autocomplete")
 public class StyledDemo extends VerticalLayout {
