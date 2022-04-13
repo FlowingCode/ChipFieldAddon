@@ -31,8 +31,9 @@ import './skip-loading-font-roboto.js';
 import '@polymer/paper-styles/paper-styles.js';
 import '@polymer/iron-icons/iron-icons.js';
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
+import { ThemableMixin } from '@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js';
 
-class PaperChip extends PolymerElement {
+class PaperChip extends ThemableMixin(PolymerElement) {
 
     static get is() {
 				return 'paper-chip';

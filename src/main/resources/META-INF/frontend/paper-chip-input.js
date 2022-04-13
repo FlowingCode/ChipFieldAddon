@@ -32,8 +32,9 @@ import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-styles/default-theme.js';
 import './paper-chip.js';
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
+import { ThemableMixin } from '@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js';
 
-class PaperChipInput extends PolymerElement {
+class PaperChipInput extends ThemableMixin(PolymerElement) {
 
     static get is() {
 				return 'paper-chip-input';
@@ -72,7 +73,8 @@ class PaperChipInput extends PolymerElement {
                     label="[[label]]"
                     allowed-pattern="[[allowedPattern]]"
                     pattern="[[pattern]]"
-                    error-message="[[errorMessage]]">
+                    error-message="[[errorMessage]]"
+        			theme$="[[theme]]">
                     <slot id="slot" name="input" slot="prefix"></slot>
                     <div id="slot2" slot="prefix">
                         <dom-repeat items="[[items]]">
@@ -81,7 +83,8 @@ class PaperChipInput extends PolymerElement {
                                 <paper-chip id="paper-chip-[[item]]-[[index]]" 
                                             label="[[item]]" 
                                             closable$="[[closable]]" 
-                                            on-chip-removed="_removeChip">
+                                            on-chip-removed="_removeChip"
+        									theme$="[[theme]]">
                                 </paper-chip>
                             </template>
                         </dom-repeat>
