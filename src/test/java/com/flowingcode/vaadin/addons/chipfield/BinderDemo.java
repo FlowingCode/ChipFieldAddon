@@ -26,10 +26,12 @@ import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Route(value = "chipfield/binder", layout = ChipfieldDemoView.class)
 @PageTitle("Binder")
 @DemoSource
 @SuppressWarnings("serial")

@@ -22,8 +22,10 @@ package com.flowingcode.vaadin.addons.chipfield;
 import com.flowingcode.vaadin.addons.demo.DemoSource;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import java.util.Arrays;
 
+@Route(value = "chipfield/restricted", layout = ChipfieldDemoView.class)
 @PageTitle("Restricted")
 @DemoSource
 @SuppressWarnings("serial")
