@@ -32,11 +32,11 @@ import com.vaadin.flow.router.Route;
 public class ChipfieldDemoView extends TabbedDemo {
 
    public ChipfieldDemoView() {
-    addDemo(new DataProviderDemo());
-    addDemo(new RestrictedDemo());
-    addDemo(new DisabledDemo());
-    addDemo(new BinderDemo());
-    addDemo(new ReadonlyDemo());
-    addDemo(new StyledDemo());
+    addDemo(DataProviderDemo.class);
+    addDemo(RestrictedDemo.class);
+    addDemo(DisabledDemo.class);
+    addDemo(BinderDemo.class);
+    addDemo(ReadonlyDemo.class);
+    addDemo(StyledDemo.class);
   }
 }

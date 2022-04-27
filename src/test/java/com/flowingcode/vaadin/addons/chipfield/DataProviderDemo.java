@@ -27,8 +27,10 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import java.util.stream.Collectors;
 
+@Route(value = "chipfield/dataprovider", layout = ChipfieldDemoView.class)
 @PageTitle("Data Provider")
 @DemoSource
 @SuppressWarnings("serial")
