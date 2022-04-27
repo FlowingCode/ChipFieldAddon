@@ -329,7 +329,7 @@ class PaperChipInputAutocomplete extends ThemableMixin(PolymerElement) {
     }
 
     _onKeyEnter() {
-				if (this.additionalItems && (this._inputValue != '' && this._inputValue != undefined)) {
+				if (this.additionalItems || (this._inputValue != '' && this._inputValue != undefined)) {
             this._saveTag(this._inputValue);
             this.required = false;
             this.autoValidate = false;
