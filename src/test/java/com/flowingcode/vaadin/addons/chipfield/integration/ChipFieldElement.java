@@ -45,4 +45,9 @@ public class ChipFieldElement extends TestBenchElement {
     TestBenchElement chip = $("paper-chip").get(index);
     executeScript("arguments[0].root.querySelector('.chip').click()", chip);
   }
+
+  public String getInputValue() {
+    return (String) executeScript("return arguments[0].$.paperInput.value", this);
+  }
+
 }
