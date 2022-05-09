@@ -20,6 +20,7 @@
 package com.flowingcode.vaadin.addons.chipfield.integration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -337,4 +338,31 @@ public class ViewIT extends AbstractChipfieldTest {
         "Additional item was not returned by findItemByLabel",
         $server.hasItemWithLabel(ADDITIONAL));
   }
+
+  /**
+   * Test selection of existing item by pressing Enter when no newItemHandler is configured
+   * 
+   * @See https://github.com/FlowingCode/ChipFieldAddon/issues/37
+   */
+  @Test
+  public void testEnterSelectsValueWithNoHandler() {
+    chipfield.sendKeys(LOREM, Keys.ENTER);
+    assertThat(chipfield.getInputValue(), isEmptyString());
+    assertThat(chipfield.getValue(), isEqualTo(LOREM));
+    assertThat($server.getValue(), isEqualTo(LOREM));
+  }
+
+  /**
+   * Test that pressing Enter doesn't clear the value when no newItemHandler is configured
+   * 
+   * @See https://github.com/FlowingCode/ChipFieldAddon/issues/37
+   */
+  @Test
+  public void testEnterPreservesValueWhenNoHandler() {
+    chipfield.sendKeys(ADDITIONAL, Keys.ENTER);
+    assertThat(chipfield.getInputValue(), Matchers.equalTo(ADDITIONAL));
+    assertThat(chipfield.getValue(), Matchers.empty());
+    assertThat($server.getValue(), Matchers.empty());
+  }
+
 }
