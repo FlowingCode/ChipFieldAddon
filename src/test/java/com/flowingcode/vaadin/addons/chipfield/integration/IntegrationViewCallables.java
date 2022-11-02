@@ -23,8 +23,6 @@ import com.flowingcode.vaadin.testbench.rpc.JsonArrayList;
 
 public interface IntegrationViewCallables {
 
-  void testCallable(boolean arg);
-
   void addValueChangeListener();
 
   void addItemRemovedListener();

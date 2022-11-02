@@ -21,9 +21,7 @@ package com.flowingcode.vaadin.addons.chipfield.integration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isEmptyString;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.Collection;
 import org.hamcrest.Matcher;
@@ -46,18 +44,6 @@ public class ViewIT extends AbstractChipfieldTest {
   public void testUpgradedToCustomElement() {
     ChipFieldElement chipfield = $(ChipFieldElement.class).first();
     assertThat(chipfield, hasBeenUpgradedToCustomElement);
-  }
-
-  @Test
-  public void testCallableSuccess() {
-    // test that the callable mechanism works
-    $server.testCallable(true);
-  }
-
-  @Test
-  public void testCallableFailure() {
-    // test that the callable mechanism detect failures
-    assertThrows(RuntimeException.class, () -> $server.testCallable(false));
   }
 
   private Matcher<Collection<String>> isEqualTo(String... values) {

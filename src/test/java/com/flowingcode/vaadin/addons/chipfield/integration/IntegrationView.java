@@ -47,14 +47,6 @@ public class IntegrationView extends Div implements IntegrationViewCallables {
 
   @Override
   @ClientCallable
-  public void testCallable(boolean arg) {
-    if (!arg) {
-      throw new IllegalArgumentException();
-    }
-  }
-
-  @Override
-  @ClientCallable
   public void allowAdditionalItems(boolean value) {
     field.setAllowAdditionalItems(value);
   }
