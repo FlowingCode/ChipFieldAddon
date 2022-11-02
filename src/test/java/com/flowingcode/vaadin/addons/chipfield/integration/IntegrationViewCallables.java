@@ -19,7 +19,7 @@
  */
 package com.flowingcode.vaadin.addons.chipfield.integration;
 
-import com.flowingcode.vaadin.addons.chipfield.integration.rpc.JsonArrayList;
+import com.flowingcode.vaadin.testbench.rpc.JsonArrayList;
 
 public interface IntegrationViewCallables {
 

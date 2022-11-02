@@ -19,7 +19,7 @@
  */
 package com.flowingcode.vaadin.addons.chipfield.integration;
 
-import com.flowingcode.vaadin.addons.chipfield.integration.rpc.HasRpcSupport;
+import com.flowingcode.vaadin.testbench.rpc.HasRpcSupport;
 
 public abstract class AbstractChipfieldTest extends AbstractViewTest implements HasRpcSupport {
 
