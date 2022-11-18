@@ -23,11 +23,13 @@ import com.flowingcode.vaadin.addons.DemoLayout;
 import com.flowingcode.vaadin.addons.GithubLink;
 import com.flowingcode.vaadin.addons.demo.TabbedDemo;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.router.ParentLayout;
 import com.vaadin.flow.router.Route;
 
 @SuppressWarnings("serial")
 @StyleSheet("context://frontend/styles/demo-styles.css")
-@Route(value = "chipfield", layout = DemoLayout.class)
+@ParentLayout(DemoLayout.class)
+@Route("chipfield")
 @GithubLink("https://github.com/FlowingCode/ChipFieldAddon")
 public class ChipfieldDemoView extends TabbedDemo {
 
