@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -372,7 +373,11 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
   }
 
   public void setChipLabelGenerator(ItemLabelGenerator<T> itemLabelGenerator) {
+    Objects.requireNonNull(itemLabelGenerator, "The item label generator can not be null");
     this.itemLabelGenerator = itemLabelGenerator;
+
+    configureItems();
+    refreshChipsLabel();
   }
 
   public void setNewItemHandler(SerializableFunction<String, T> handler) {
@@ -444,4 +449,10 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
   public Registration addChipClickedListener(ComponentEventListener<ChipClickedEvent<T>> listener) {
     return addListener(ChipClickedEvent.class, (ComponentEventListener) listener);
   }
+  
+  private void refreshChipsLabel() {
+    String[] labels = getValue().stream().map(itemLabelGenerator::apply).toArray(String[]::new);
+    setClientChipWithoutEvent(labels);
+  }
+  
 }
