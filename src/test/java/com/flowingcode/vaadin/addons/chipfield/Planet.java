@@ -19,11 +19,13 @@
  */
 package com.flowingcode.vaadin.addons.chipfield;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Planet {
+@SuppressWarnings("serial")
+public class Planet implements Serializable {
   private String name;
   private List<String> features;
 
