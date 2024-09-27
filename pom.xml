@@ -452,7 +452,7 @@
 			<properties>
 				<maven.compiler.source>17</maven.compiler.source>
 				<maven.compiler.target>17</maven.compiler.target>
-				<vaadin.version>24.2.6</vaadin.version>
+				<vaadin.version>24.4.12</vaadin.version>
 				<jetty.version>11.0.12</jetty.version>
 			</properties>
 			<repositories>
@@ -467,6 +467,14 @@
 							<url>https://maven.vaadin.com/vaadin-prereleases</url>
 					</pluginRepository>
 			</pluginRepositories>
+			<dependencies>
+				<dependency>
+					<groupId>com.flowingcode.vaadin.addons.demo</groupId>
+					<artifactId>commons-demo</artifactId>
+					<version>4.1.0</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
 		</profile>
 		
     </profiles>
