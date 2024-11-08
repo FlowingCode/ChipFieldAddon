@@ -296,7 +296,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
     return getElement().getProperty("disabled", false);
   }
 
-  /** @deprecated use {@link #setReadOnly()} */
+  /** @deprecated use {@link #setReadOnly(boolean)} */
   @Deprecated
   public void setReadonly(boolean readonly) {
     setReadOnly(readonly);
