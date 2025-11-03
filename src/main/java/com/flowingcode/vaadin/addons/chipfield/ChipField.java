@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
+import com.flowingcode.vaadin.jsonmigration.JsonMigration;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ComponentEvent;
@@ -151,7 +152,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
         .addEventListener(
             "chip-created",
             e -> {
-              JsonObject eventData = e.getEventData();
+              JsonObject eventData = JsonMigration.getEventData(e);
               String chipLabel = eventData.get(CHIP_LABEL).asString();
               T newItem =
                   findItemByLabel(chipLabel)
@@ -178,7 +179,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
         .addEventListener(
             "chip-removed",
             e -> {
-              JsonObject eventData = e.getEventData();
+              JsonObject eventData = JsonMigration.getEventData(e);
               String chipLabel = eventData.get(CHIP_LABEL).asString();
               findItemByLabel(chipLabel).ifPresent(item -> removeSelectedItem(item, true));
             })
@@ -197,7 +198,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
           object.put("value", itemLabelGenerator.apply(item));
           array.set(index.getAndIncrement(), object);
         });
-    getElement().setPropertyJson("source", array);
+    JsonMigration.setPropertyJson(getElement(), "source", array);
   }
 
   @Override
