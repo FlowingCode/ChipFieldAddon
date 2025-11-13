@@ -50,6 +50,7 @@ import com.vaadin.flow.shared.Registration;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import elemental.json.impl.JreJsonFactory;
+import lombok.experimental.ExtensionMethod;
 
 @SuppressWarnings("serial")
 @Tag("paper-chip-input-autocomplete")
@@ -64,6 +65,7 @@ import elemental.json.impl.JreJsonFactory;
 @NpmPackage(value = "@polymer/paper-ripple", version = "3.0.1")
 @NpmPackage(value = "@polymer/paper-styles", version = "3.0.1")
 @JsModule("./paper-chip-input-autocomplete.js")
+@ExtensionMethod(value = JsonMigration.class, suppressBaseMethods = true)
 public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
     implements HasStyle, HasItemsAndComponents<T>, HasDataProvider<T>, HasSize, HasTheme {
 
@@ -152,7 +154,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
         .addEventListener(
             "chip-created",
             e -> {
-              JsonObject eventData = JsonMigration.getEventData(e);
+              JsonObject eventData = e.getEventData();
               String chipLabel = eventData.get(CHIP_LABEL).asString();
               T newItem =
                   findItemByLabel(chipLabel)
@@ -179,7 +181,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
         .addEventListener(
             "chip-removed",
             e -> {
-              JsonObject eventData = JsonMigration.getEventData(e);
+              JsonObject eventData = e.getEventData();
               String chipLabel = eventData.get(CHIP_LABEL).asString();
               findItemByLabel(chipLabel).ifPresent(item -> removeSelectedItem(item, true));
             })
@@ -198,7 +200,7 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
           object.put("value", itemLabelGenerator.apply(item));
           array.set(index.getAndIncrement(), object);
         });
-    JsonMigration.setPropertyJson(getElement(), "source", array);
+    getElement().setPropertyJson("source", array);
   }
 
   @Override
