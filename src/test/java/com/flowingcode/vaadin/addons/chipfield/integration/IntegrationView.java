@@ -20,17 +20,17 @@
 package com.flowingcode.vaadin.addons.chipfield.integration;
 
 import com.flowingcode.vaadin.addons.chipfield.ChipField;
+import com.flowingcode.vaadin.jsonmigration.InstrumentedRoute;
 import com.flowingcode.vaadin.testbench.rpc.JsonArrayList;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.router.Route;
 import elemental.json.Json;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-@Route("it")
+@InstrumentedRoute("it")
 public class IntegrationView extends Div implements IntegrationViewCallables {
 
   public ChipField<String> field;
@@ -166,7 +166,7 @@ public class IntegrationView extends Div implements IntegrationViewCallables {
   @Override
   @ClientCallable
   public JsonArrayList<String> getLastValueChange() {
-    return JsonArrayList.fromStringArray(lastValueChange);
+    return JsonArrayList.fromStrings(lastValueChange);
   }
 
   @Override
