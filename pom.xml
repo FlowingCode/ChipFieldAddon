@@ -367,6 +367,7 @@
 									<classifier>demo</classifier>
 									<excludes>
 										<exclude>META-INF/resources/frontend/styles/shared-styles.css</exclude>
+										<exclude>META-INF/services/com.vaadin.flow.server.VaadinServiceInitListener</exclude>
 										<exclude>**/test/*</exclude>
 										<exclude>**/integration/*</exclude>
 										<exclude>**/DemoView.class</exclude>
