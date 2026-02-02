@@ -4,7 +4,7 @@
 
     <groupId>com.flowingcode.vaadin.addons.chipfield</groupId>
     <artifactId>chipfield-addon</artifactId>
-    <version>2.7.1</version>
+    <version>2.7.2-SNAPSHOT</version>
     <name>ChipField Addon</name>
     <description>Integration of paper-chip for Vaadin 14 as a field</description>
 
@@ -35,7 +35,7 @@
         <url>https://github.com/FlowingCode/ChipFieldAddon</url>
         <connection>scm:git:git://github.com/FlowingCode/ChipFieldAddon.git</connection>
         <developerConnection>scm:git:ssh://git@github.com:/FlowingCode/ChipFieldAddon.git</developerConnection>
-      <tag>chipfield-addon-2.7.1</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <developers>
