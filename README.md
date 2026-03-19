@@ -7,6 +7,10 @@
 
 Vaadin Flow integration of https://github.com/ThomasCybulski/paper-chip, based on https://github.com/bastiion/paper-chip for Polymer 3 support
 
+## Supported versions
+
+Supported versions: Vaadin 14-25 (add-on version 2.x)
+
 ## Online demo
 
 Try the add-on demo at http://addonsv14.flowingcode.com/chipfield
