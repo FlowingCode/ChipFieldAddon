@@ -2,7 +2,7 @@
  * #%L
  * ChipField Addon
  * %%
- * Copyright (C) 2018 - 2022 Flowing Code
+ * Copyright (C) 2018 - 2026 Flowing Code
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -273,6 +273,26 @@ public class ChipField<T> extends AbstractField<ChipField<T>, List<T>>
 
   public void setLabel(String label) {
     getElement().setProperty("label", label);
+  }
+
+  /**
+   * Sets whether the label is displayed as a static placeholder that is hidden when the input has a
+   * value, instead of floating above the input. When the label does not float, no space is reserved
+   * for it above the input.
+   *
+   * @param noLabelFloat {@code true} to prevent the label from floating, {@code false} otherwise.
+   */
+  public void setNoLabelFloat(boolean noLabelFloat) {
+    getElement().setProperty("noLabelFloat", noLabelFloat);
+  }
+
+  /**
+   * Returns whether the label is prevented from floating above the input.
+   *
+   * @return {@code true} if the label does not float, {@code false} otherwise.
+   */
+  public boolean isNoLabelFloat() {
+    return getElement().getProperty("noLabelFloat", false);
   }
 
   public String[] getChipsAsStrings() {

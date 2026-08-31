@@ -85,6 +85,15 @@ class PaperChipInputAutocomplete extends ThemableMixin(PolymerElement) {
             },
 
             /**
+            * If true, the label is displayed as a static placeholder that is hidden
+            * when the input has a value, instead of floating above the input.
+            */
+            noLabelFloat: {
+                type: Boolean,
+                value: false
+            },
+
+            /**
             * If true, the paper-chip-input-autocomplete is focused.
             */
             autofocus: {
@@ -274,6 +283,7 @@ class PaperChipInputAutocomplete extends ThemableMixin(PolymerElement) {
                         disabled$="[[disabled]]"
                         readonly$="[[readonly]]"
                         label="[[label]]"
+                        no-label-float$="[[noLabelFloat]]"
                         on-keyup="_findItems"
                         value="{{_inputValue}}"
                         autofocus="{{autofocus}}"
