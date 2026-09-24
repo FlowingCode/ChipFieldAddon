@@ -72,6 +72,11 @@
             <id>Vaadin Directory</id>
             <url>https://maven.vaadin.com/vaadin-addons</url>
         </repository>
+        <repository>
+            <?dev-only?>
+            <id>flowing-code-releases</id>
+            <url>https://maven.flowingcode.com/releases</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -132,6 +137,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+            <?dev-only?>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-testbench</artifactId>
             <scope>test</scope>
@@ -162,9 +168,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<?dev-only?>
 			<groupId>com.flowingcode.vaadin.test</groupId>
 			<artifactId>testbench-rpc</artifactId>
-			<version>1.5.0</version>
+			<version>1.5.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -221,6 +228,19 @@
 	</pluginManagement>
 		
         <plugins>
+			<plugin>
+				<?dev-only?>
+				<groupId>com.flowingcode.maven</groupId>
+				<artifactId>dev-nuke-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>dev-nuke</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
